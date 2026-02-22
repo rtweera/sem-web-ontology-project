@@ -24,6 +24,18 @@
     
 
 
+    <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#canApplyFor -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#canApplyFor">
+        <owl:inverseOf rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#needKnowldgeOf"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#AI_Subfield"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Career_Role"/>
+    </owl:ObjectProperty>
+    
+
+
     <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#canUnderstand -->
 
     <owl:ObjectProperty rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#canUnderstand">
@@ -94,6 +106,17 @@
         <owl:inverseOf rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#usesTool"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
         <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#needKnowldgeOf -->
+
+    <owl:ObjectProperty rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#needKnowldgeOf">
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#AsymmetricProperty"/>
+        <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#IrreflexiveProperty"/>
+        <rdfs:domain rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Career_Role"/>
+        <rdfs:range rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#AI_Subfield"/>
     </owl:ObjectProperty>
     
 
@@ -706,7 +729,10 @@
                 <owl:someValuesFrom rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Neural_Networks"/>
             </owl:Restriction>
         </rdf:type>
+        <ai-ontology:hasPrerequisite rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#deep_neural_networks"/>
         <ai-ontology:suitableForLevel rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#advanced"/>
+        <ai-ontology:usesTool rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#pytorch"/>
+        <ai-ontology:difficultyLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</ai-ontology:difficultyLevel>
     </owl:NamedIndividual>
     
 
@@ -717,6 +743,7 @@
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Generative_AI"/>
         <ai-ontology:hasPrerequisite rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#deep_neural_networks"/>
         <ai-ontology:requiresKnowledgeLevel rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#intermediate"/>
+        <ai-ontology:usesTool rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#langchain"/>
     </owl:NamedIndividual>
     
 
@@ -790,6 +817,17 @@
     
 
 
+    <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#collaborative_filtering -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#collaborative_filtering">
+        <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Recommendation_Systems"/>
+        <ai-ontology:hasPrerequisite rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#matrix_algebra"/>
+        <ai-ontology:hasPrerequisite rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#probability_theory"/>
+        <ai-ontology:difficultyLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</ai-ontology:difficultyLevel>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#complexity -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#complexity">
@@ -807,6 +845,14 @@
     
 
 
+    <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#content_based -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#content_based">
+        <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Recommendation_Systems"/>
+    </owl:NamedIndividual>
+    
+
+
     <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#convolution_neural_networks -->
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#convolution_neural_networks">
@@ -819,6 +865,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#data_scientist">
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Industry"/>
+        <ai-ontology:needKnowldgeOf rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#neural_network_basics"/>
         <ai-ontology:averageSalary rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">350000</ai-ontology:averageSalary>
     </owl:NamedIndividual>
     
@@ -872,6 +919,9 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#genai_specialist">
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Industry"/>
+        <ai-ontology:needKnowldgeOf rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#agentic_ai"/>
+        <ai-ontology:needKnowldgeOf rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#large_language_models"/>
+        <ai-ontology:needKnowldgeOf rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#retrieval_augmented_generation"/>
         <ai-ontology:averageSalary rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">280000</ai-ontology:averageSalary>
     </owl:NamedIndividual>
     
@@ -891,6 +941,22 @@
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#google_vertex_ai">
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Cloud_Platform"/>
         <ai-ontology:isOpenSource rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</ai-ontology:isOpenSource>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#hybrid_recommenders -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#hybrid_recommenders">
+        <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Recommendation_Systems"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#industrial_robotics -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#industrial_robotics">
+        <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Robotics"/>
     </owl:NamedIndividual>
     
 
@@ -999,6 +1065,16 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#matrix_algebra">
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Linear_Algebra"/>
+        <ai-ontology:recommendedResource rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#matrix_math_for_engineers"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#matrix_math_for_engineers -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#matrix_math_for_engineers">
+        <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Documentation"/>
+        <ai-ontology:resourceURL rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://www.math.hkust.edu.hk/~machas/matrix-algebra-for-engineers.pdf</ai-ontology:resourceURL>
     </owl:NamedIndividual>
     
 
@@ -1007,6 +1083,8 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#ml_engineer">
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Industry"/>
+        <ai-ontology:needKnowldgeOf rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#collaborative_filtering"/>
+        <ai-ontology:requiresSkill rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#git"/>
         <ai-ontology:requiresSkill rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#pytorch"/>
         <ai-ontology:averageSalary rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">300000</ai-ontology:averageSalary>
     </owl:NamedIndividual>
@@ -1017,6 +1095,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#mlops_engineer">
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Industry"/>
+        <ai-ontology:requiresSkill rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#aws_sagemaker"/>
         <ai-ontology:averageSalary rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">320000</ai-ontology:averageSalary>
     </owl:NamedIndividual>
     
@@ -1089,6 +1168,14 @@
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#pinecone">
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Vector_Database"/>
         <ai-ontology:isOpenSource rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</ai-ontology:isOpenSource>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#policy_methods -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#policy_methods">
+        <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Reinforcement_Learning"/>
     </owl:NamedIndividual>
     
 
@@ -1168,6 +1255,7 @@
         <ai-ontology:hasPrerequisite rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#small_language_models"/>
         <ai-ontology:usesTool rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#langchain"/>
         <ai-ontology:usesTool rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#pinecone"/>
+        <ai-ontology:usesTool rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#qdrant"/>
         <ai-ontology:difficultyLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</ai-ontology:difficultyLevel>
     </owl:NamedIndividual>
     
@@ -1187,6 +1275,14 @@
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#robotics_with_webots">
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Online_Course"/>
         <ai-ontology:resourceURL rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://www.coursera.org/specializations/introduction-robotics-webots</ai-ontology:resourceURL>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#rule_based_mas -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#rule_based_mas">
+        <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Multi_Agent_Systems"/>
     </owl:NamedIndividual>
     
 
@@ -1213,8 +1309,21 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#slm_researcher">
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Researcher"/>
+        <ai-ontology:needKnowldgeOf rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#retrieval_augmented_generation"/>
+        <ai-ontology:needKnowldgeOf rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#small_language_models"/>
         <ai-ontology:requiresSkill rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#pytorch"/>
         <ai-ontology:averageSalary rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">200000</ai-ontology:averageSalary>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#slms_are_future_of_agentic_ai -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#slms_are_future_of_agentic_ai">
+        <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Research_Paper"/>
+        <ai-ontology:isRecommendedResourceOf rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#small_language_models"/>
+        <ai-ontology:suitableForLevel rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#advanced"/>
+        <ai-ontology:resourceURL rdf:datatype="http://www.w3.org/2001/XMLSchema#anyURI">https://arxiv.org/abs/2506.02153</ai-ontology:resourceURL>
     </owl:NamedIndividual>
     
 
@@ -1224,7 +1333,18 @@
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#small_language_models">
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Generative_AI"/>
         <ai-ontology:hasPrerequisite rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#deep_neural_networks"/>
+        <ai-ontology:usesTool rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#ollama"/>
+        <ai-ontology:usesTool rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#pytorch"/>
         <ai-ontology:difficultyLevel rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</ai-ontology:difficultyLevel>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#social_robotics -->
+
+    <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#social_robotics">
+        <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Robotics"/>
+        <ai-ontology:hasPrerequisite rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#matrix_algebra"/>
     </owl:NamedIndividual>
     
 
@@ -1296,6 +1416,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#vision_engineer">
         <rdf:type rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#Industry"/>
+        <ai-ontology:needKnowldgeOf rdf:resource="http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#advanced_cv"/>
         <ai-ontology:averageSalary rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">380000</ai-ontology:averageSalary>
     </owl:NamedIndividual>
     
