@@ -1,71 +1,73 @@
+# app.py
 import streamlit as st
 import pandas as pd
 from SPARQLWrapper import SPARQLWrapper, JSON
+from competency_questions import QUERIES
+import agent
 
-# 1. Connect to your local GraphDB Endpoint
-# Make sure the repository ID at the end matches exactly what you named it in Step 1
+# --- GraphDB Connection ---
 SPARQL_ENDPOINT = "http://localhost:7200/repositories/ai-ontology"
 sparql = SPARQLWrapper(SPARQL_ENDPOINT)
 
-# Helper function to run SPARQL and convert to a Pandas DataFrame
 def run_query(query_string):
     sparql.setQuery(query_string)
     sparql.setReturnFormat(JSON)
     results = sparql.query().convert()
-    
-    # Parse the JSON into a flat list of dictionaries
     data = []
     for result in results["results"]["bindings"]:
-        # We split by '#' to remove the long URL prefix and just show the snake_case names
         row = {k: v["value"].split("#")[-1] for k, v in result.items()}
         data.append(row)
+    return data
+
+# --- UI Setup ---
+st.title("🧠 Modular AI Ontology Agent")
+st.write("Powered by GraphDB & local Llama 3.2 1B")
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+# --- Main Application Flow ---
+if prompt := st.chat_input("Ask about prerequisites or PyTorch roles..."):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        response_placeholder = st.empty()
         
-    return pd.DataFrame(data)
-
-# 2. Build the Streamlit UI
-st.title("🧠 AI Career & Learning Navigator")
-st.write("Discover prerequisites, roles, and tools in the Artificial Intelligence field.")
-
-# 3. Interactive Component: Find Roles by Tool
-st.subheader("Skill Requirement Search")
-st.write("Which career roles require PyTorch?")
-
-# The SPARQL Query (CQ3) - Using snake_case for instances
-query_roles = """
-PREFIX ai: <http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#>
-SELECT ?careerRole ?salary
-WHERE {
-  ?careerRole ai:requiresSkill ai:pytorch .
-  ?careerRole ai:averageSalary ?salary .
-}
-"""
-
-if st.button("Search Roles"):
-    with st.spinner("Querying the ontology..."):
-        df = run_query(query_roles)
-        if not df.empty:
-            st.dataframe(df, use_container_width=True)
+        with st.spinner("Agent is classifying intent..."):
+            # 1. Agent routes the request
+            intent = agent.classify_intent(prompt)
+        
+        if intent == "UNKNOWN":
+            msg = "I can only answer questions about Small Language Model prerequisites or roles requiring PyTorch right now."
+            response_placeholder.markdown(msg)
+            st.session_state.messages.append({"role": "assistant", "content": msg})
         else:
-            st.warning("No roles found for this skill.")
+            # 2. Retrieve the data based on intent
+            sparql_query = QUERIES[intent]["sparql"]
+            with st.spinner(f"Running SPARQL query for '{intent}'..."):
+                raw_data = run_query(sparql_query)
+            
+            # Show the under-the-hood process to the examiner
+            with st.expander(f"🛠️ Under the Hood: Agent Routed to '{intent}'"):
+                st.write("**Executed SPARQL:**")
+                st.code(sparql_query, language="sparql")
+                st.write("**Raw GraphDB Result:**")
+                st.dataframe(pd.DataFrame(raw_data))
 
-# 4. Interactive Component: View High-Difficulty Subjects
-st.subheader("Advanced Subjects Filter")
-st.write("View AI subfields with a difficulty level greater than 6.")
-
-# The SPARQL Query (CQ4)
-query_difficulty = """
-PREFIX ai: <http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#>
-SELECT ?subfield ?difficulty
-WHERE {
-  ?subfield ai:difficultyLevel ?difficulty .
-  FILTER (?difficulty > 6)
-}
-"""
-
-if st.button("Filter Subjects"):
-    with st.spinner("Querying the ontology..."):
-        df_diff = run_query(query_difficulty)
-        if not df_diff.empty:
-            st.table(df_diff)
-        else:
-            st.warning("No subjects found matching this criteria.")
+            # 3. Agent generates the final response
+            with st.spinner("Agent is generating response..."):
+                response_stream = agent.generate_natural_response(prompt, raw_data)
+                
+                full_response = ""
+                for chunk in response_stream:
+                    full_response += chunk['message']['content']
+                    response_placeholder.markdown(full_response + "▌")
+                
+                response_placeholder.markdown(full_response)
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
