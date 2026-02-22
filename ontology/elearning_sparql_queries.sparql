@@ -1,0 +1,345 @@
+# ============================================================
+# CS & AI E-Learning Knowledge Navigation Ontology
+# SPARQL Competency Questions
+# Namespace: http://www.semanticweb.org/elearning#
+# ============================================================
+
+PREFIX el: <http://www.semanticweb.org/elearning#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX owl: <http://www.w3.org/2002/07/owl#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+
+# ============================================================
+# COMPETENCY QUESTION 1
+# "What are the direct prerequisites of Graph RAG?"
+# ============================================================
+SELECT ?prereqName ?difficultyScore ?studyHours ?domain
+WHERE {
+    el:GraphRAG el:hasPrerequisite ?prereq .
+    ?prereq el:conceptName ?prereqName .
+    ?prereq el:difficultyScore ?difficultyScore .
+    ?prereq el:typicalStudyHours ?studyHours .
+    ?prereq el:belongsToDomain ?d .
+    ?d el:domainName ?domain .
+}
+ORDER BY ?difficultyScore
+
+
+# ============================================================
+# COMPETENCY QUESTION 2
+# "What is the FULL prerequisite chain to learn Graph RAG?
+#  (all transitive prerequisites, not just direct ones)"
+# ============================================================
+SELECT DISTINCT ?prereqName ?difficultyScore ?abstractionLevel
+WHERE {
+    el:GraphRAG el:hasPrerequisite+ ?prereq .
+    ?prereq el:conceptName ?prereqName .
+    ?prereq el:difficultyScore ?difficultyScore .
+    ?prereq el:abstractionLevel ?abstractionLevel .
+}
+ORDER BY ?difficultyScore
+
+
+# ============================================================
+# COMPETENCY QUESTION 3
+# "What career roles does learning Graph RAG contribute to?"
+# ============================================================
+SELECT DISTINCT ?roleName ?roleType ?avgSalary ?demandLevel
+WHERE {
+    el:GraphRAG el:leadsToRole ?role .
+    ?role el:roleName ?roleName .
+    ?role el:averageSalaryUSD ?avgSalary .
+    ?role el:demandLevel ?demandLevel .
+    ?role rdf:type ?roleType .
+    FILTER(?roleType != owl:NamedIndividual)
+}
+ORDER BY DESC(?avgSalary)
+
+
+# ============================================================
+# COMPETENCY QUESTION 4
+# "What concepts does a learner (Ali) still need to study
+#  to reach Graph RAG, given their current knowledge state?"
+#
+# (Gap analysis: prerequisite chain minus what Ali already knows)
+# ============================================================
+SELECT DISTINCT ?missingConceptName ?difficulty ?studyHours
+WHERE {
+    el:GraphRAG el:hasPrerequisite+ ?needed .
+    ?needed el:conceptName ?missingConceptName .
+    ?needed el:difficultyScore ?difficulty .
+    ?needed el:typicalStudyHours ?studyHours .
+
+    FILTER NOT EXISTS {
+        el:KS_Ali el:hasConceptMastery ?mastery .
+        ?mastery el:masteryOfConcept ?needed .
+    }
+}
+ORDER BY ?difficulty
+
+
+# ============================================================
+# COMPETENCY QUESTION 5
+# "What is Ali's learning path to Graph RAG, milestone by milestone?
+#  Show each milestone in order with effort estimates."
+# ============================================================
+SELECT ?order ?conceptName ?weeks ?hoursPerWeek
+WHERE {
+    el:Path_Ali_GraphRAG el:pathHasMilestone ?milestone .
+    ?milestone el:milestoneOrder ?order .
+    ?milestone el:milestoneTargetConcept ?concept .
+    ?concept el:conceptName ?conceptName .
+    ?milestone el:hasEffortEstimate ?effort .
+    ?effort el:estimatedWeeks ?weeks .
+    ?effort el:hoursPerWeek ?hoursPerWeek .
+}
+ORDER BY ?order
+
+
+# ============================================================
+# COMPETENCY QUESTION 6
+# "What skills are required to become a Computer Vision Engineer,
+#  and at what proficiency level?"
+# ============================================================
+SELECT ?conceptName ?proficiencyLabel ?isMandatory
+WHERE {
+    el:ComputerVisionEngineer el:requiresSkill ?skillReq .
+    ?skillReq el:skillConcept ?concept .
+    ?skillReq el:requiredProficiency ?profLevel .
+    ?skillReq el:isSkillRequired ?isMandatory .
+    ?concept el:conceptName ?conceptName .
+    ?profLevel el:proficiencyLabel ?proficiencyLabel .
+}
+ORDER BY DESC(?isMandatory)
+
+
+# ============================================================
+# COMPETENCY QUESTION 7
+# "Which concepts open pathways to becoming an AI Engineer?"
+# (concepts that either directly lead to the role,
+#  or are required skills of the role)
+# ============================================================
+SELECT DISTINCT ?conceptName ?difficultyScore ?isActiveResearch
+WHERE {
+    {
+        ?concept el:leadsToRole el:AIEngineer .
+        ?concept el:conceptName ?conceptName .
+        ?concept el:difficultyScore ?difficultyScore .
+        OPTIONAL { ?concept el:isActiveResearchArea ?isActiveResearch }
+    }
+    UNION
+    {
+        el:AIEngineer el:requiresSkill ?skillReq .
+        ?skillReq el:skillConcept ?concept .
+        ?concept el:conceptName ?conceptName .
+        ?concept el:difficultyScore ?difficultyScore .
+        OPTIONAL { ?concept el:isActiveResearchArea ?isActiveResearch }
+    }
+}
+ORDER BY ?difficultyScore
+
+
+# ============================================================
+# COMPETENCY QUESTION 8
+# "What free learning resources are available for the
+#  Transformer Architecture, and what style do they suit?"
+# ============================================================
+SELECT ?title ?resourceType ?rating ?durationHours ?style ?provider
+WHERE {
+    ?resource el:teachsConcept el:TransformerArchitecture .
+    ?resource el:isFree true .
+    ?resource el:resourceTitle ?title .
+    ?resource el:qualityRating ?rating .
+    ?resource rdf:type ?resourceType .
+    FILTER(?resourceType != owl:NamedIndividual)
+    OPTIONAL {
+        ?resource el:suitableForStyle ?styleInd .
+        ?styleInd rdfs:label ?style .
+    }
+    OPTIONAL {
+        ?resource el:resourceDurationHours ?durationHours .
+    }
+    OPTIONAL {
+        ?resource el:offeredBy ?prov .
+        ?prov el:providerName ?provider .
+    }
+}
+ORDER BY DESC(?rating)
+
+
+# ============================================================
+# COMPETENCY QUESTION 9
+# "Which concepts are currently active research areas
+#  and belong to the NLP domain?"
+# ============================================================
+SELECT ?conceptName ?difficultyScore ?yearIntroduced ?abstractionLevel
+WHERE {
+    ?concept el:isActiveResearchArea true .
+    ?concept el:belongsToDomain el:DomainNLP .
+    ?concept el:conceptName ?conceptName .
+    ?concept el:difficultyScore ?difficultyScore .
+    ?concept el:abstractionLevel ?abstractionLevel .
+    OPTIONAL { ?concept el:yearIntroduced ?yearIntroduced }
+}
+ORDER BY DESC(?difficultyScore)
+
+
+# ============================================================
+# COMPETENCY QUESTION 10
+# "For each learner, what is their strongest known concept
+#  (highest mastery score)?"
+# ============================================================
+SELECT ?learnerName ?conceptName ?masteryScore ?proficiencyLabel
+WHERE {
+    ?learner el:learnerName ?learnerName .
+    ?learner el:hasKnowledgeState ?ks .
+    ?ks el:hasConceptMastery ?mastery .
+    ?mastery el:masteryScore ?score .
+    ?mastery el:masteryOfConcept ?concept .
+    ?mastery el:hasProficiencyLevel ?prof .
+    ?concept el:conceptName ?conceptName .
+    ?prof el:proficiencyLabel ?proficiencyLabel .
+
+    BIND(?score AS ?masteryScore)
+
+    FILTER NOT EXISTS {
+        ?ks el:hasConceptMastery ?otherMastery .
+        ?otherMastery el:masteryScore ?otherScore .
+        FILTER(?otherScore > ?score)
+    }
+}
+
+
+# ============================================================
+# COMPETENCY QUESTION 11
+# "Which concepts, if mastered, open the most pathways
+#  to other concepts? (highest out-degree in prerequisite graph)"
+# ============================================================
+SELECT ?conceptName (COUNT(DISTINCT ?unlocked) AS ?conceptsUnlocked)
+WHERE {
+    ?concept el:conceptName ?conceptName .
+    ?unlocked el:hasPrerequisite ?concept .
+}
+GROUP BY ?conceptName
+ORDER BY DESC(?conceptsUnlocked)
+LIMIT 10
+
+
+# ============================================================
+# COMPETENCY QUESTION 12
+# "What is the total estimated study time for a learner
+#  starting from zero to reach Graph RAG proficiency?
+#  (sum of all transitive prerequisite study hours + Graph RAG itself)"
+# ============================================================
+SELECT (SUM(?hours) AS ?totalHoursFromZero)
+WHERE {
+    {
+        el:GraphRAG el:typicalStudyHours ?hours .
+    }
+    UNION
+    {
+        el:GraphRAG el:hasPrerequisite+ ?prereq .
+        ?prereq el:typicalStudyHours ?hours .
+    }
+}
+
+
+# ============================================================
+# COMPETENCY QUESTION 13
+# "Which career roles require Expert-level proficiency
+#  in any concept?"
+# ============================================================
+SELECT DISTINCT ?roleName ?conceptName ?proficiencyLabel
+WHERE {
+    ?role el:requiresSkill ?skillReq .
+    ?skillReq el:skillConcept ?concept .
+    ?skillReq el:requiredProficiency ?profLevel .
+    ?profLevel el:proficiencyLabel ?proficiencyLabel .
+    ?profLevel el:proficiencyScore ?score .
+    ?role el:roleName ?roleName .
+    ?concept el:conceptName ?conceptName .
+    FILTER(?score >= 5)
+}
+ORDER BY ?roleName
+
+
+# ============================================================
+# COMPETENCY QUESTION 14
+# "Which concepts belong to multiple domains simultaneously?
+#  (cross-domain concepts — important bridging knowledge)"
+# ============================================================
+SELECT ?conceptName (COUNT(DISTINCT ?domain) AS ?domainCount)
+           (GROUP_CONCAT(DISTINCT ?domainName; separator=" | ") AS ?domains)
+WHERE {
+    ?concept el:conceptName ?conceptName .
+    ?concept el:belongsToDomain ?domain .
+    ?domain el:domainName ?domainName .
+}
+GROUP BY ?conceptName
+HAVING (COUNT(DISTINCT ?domain) > 1)
+ORDER BY DESC(?domainCount)
+
+
+# ============================================================
+# COMPETENCY QUESTION 15
+# "Which learners have a concept goal (not career goal)
+#  and what concept are they targeting?"
+# ============================================================
+SELECT ?learnerName ?learnerType ?targetConceptName ?difficulty ?studyHours
+WHERE {
+    ?learner el:learnerName ?learnerName .
+    ?learner rdf:type ?learnerType .
+    FILTER(?learnerType != owl:NamedIndividual)
+    ?learner el:hasLearningGoal ?goal .
+    ?goal rdf:type el:ConceptGoal .
+    ?goal el:goalTargetConcept ?concept .
+    ?concept el:conceptName ?targetConceptName .
+    ?concept el:difficultyScore ?difficulty .
+    ?concept el:typicalStudyHours ?studyHours .
+}
+
+
+# ============================================================
+# COMPETENCY QUESTION 16
+# "What concepts are 'bridge' concepts — they are both
+#  a prerequisite for advanced concepts AND accessible
+#  from foundational concepts (difficulty 3-6)?"
+# ============================================================
+SELECT DISTINCT ?conceptName ?difficulty ?abstractionLevel ?domain
+WHERE {
+    ?concept el:conceptName ?conceptName .
+    ?concept el:difficultyScore ?difficulty .
+    ?concept el:abstractionLevel ?abstractionLevel .
+    ?concept el:belongsToDomain ?d .
+    ?d el:domainName ?domain .
+    FILTER(?difficulty >= 4 && ?difficulty <= 7)
+
+    # Has at least one prerequisite (not foundational from scratch)
+    ?concept el:hasPrerequisite ?somePrereq .
+
+    # Is a prerequisite for at least one harder concept
+    ?harderConcept el:hasPrerequisite ?concept .
+    ?harderConcept el:difficultyScore ?harderDiff .
+    FILTER(?harderDiff > ?difficulty)
+}
+ORDER BY ?difficulty
+
+
+# ============================================================
+# BONUS — ASK QUERY
+# "Does Graph RAG have any prerequisites that are
+#  also active research areas?"
+# ============================================================
+ASK {
+    el:GraphRAG el:hasPrerequisite ?prereq .
+    ?prereq el:isActiveResearchArea true .
+}
+
+
+# ============================================================
+# BONUS — DESCRIBE
+# "Get all information about the Transformer Architecture concept"
+# ============================================================
+DESCRIBE el:TransformerArchitecture

@@ -1,0 +1,2304 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns="http://www.semanticweb.org/elearning#"
+     xml:base="http://www.semanticweb.org/elearning"
+     xmlns:owl="http://www.w3.org/2002/07/owl#"
+     xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+     xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:el="http://www.semanticweb.org/elearning#">
+
+    <owl:Ontology rdf:about="http://www.semanticweb.org/elearning">
+        <dc:title>CS and AI E-Learning Knowledge Navigation Ontology</dc:title>
+        <dc:description>An ontology for personalised learning path navigation in Computer Science and Artificial Intelligence. Models concepts with prerequisite chains, career roles with skill requirements, learning resources, and learner knowledge states to answer questions such as: What do I need to know before learning X? What career paths does knowing X open? What is the most efficient learning path from my current state to my goal?</dc:description>
+        <dc:creator>E-Learning Ontology Project</dc:creator>
+        <owl:versionInfo>1.0</owl:versionInfo>
+    </owl:Ontology>
+
+
+    <!-- ================================================================
+         OBJECT PROPERTIES
+         ================================================================ -->
+
+    <!-- Concept graph -->
+    <owl:ObjectProperty rdf:about="#hasPrerequisite">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="#Concept"/>
+        <rdfs:label>has prerequisite</rdfs:label>
+        <rdfs:comment>A concept that must be understood before this concept can be meaningfully studied.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#isPrerequisiteFor">
+        <owl:inverseOf rdf:resource="#hasPrerequisite"/>
+        <rdfs:label>is prerequisite for</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#relatedTo">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="#Concept"/>
+        <rdf:type rdf:resource="owl:SymmetricProperty"/>
+        <rdfs:label>related to</rdfs:label>
+        <rdfs:comment>Concepts that are conceptually related but not in a strict prerequisite relationship.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#enablesConcept">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="#Concept"/>
+        <rdfs:label>enables concept</rdfs:label>
+        <rdfs:comment>Knowing this concept directly enables understanding of the target concept.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#belongsToDomain">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="#Domain"/>
+        <rdfs:label>belongs to domain</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#belongsToSubdomain">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="#Subdomain"/>
+        <rdfs:label>belongs to subdomain</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#subdomainOf">
+        <rdfs:domain rdf:resource="#Subdomain"/>
+        <rdfs:range rdf:resource="#Domain"/>
+        <rdfs:label>subdomain of</rdfs:label>
+    </owl:ObjectProperty>
+
+    <!-- Learner -->
+    <owl:ObjectProperty rdf:about="#hasKnowledgeState">
+        <rdfs:domain rdf:resource="#Learner"/>
+        <rdfs:range rdf:resource="#KnowledgeState"/>
+        <rdf:type rdf:resource="owl:FunctionalProperty"/>
+        <rdfs:label>has knowledge state</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasConceptMastery">
+        <rdfs:domain rdf:resource="#KnowledgeState"/>
+        <rdfs:range rdf:resource="#ConceptMastery"/>
+        <rdfs:label>has concept mastery</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#masteryOfConcept">
+        <rdfs:domain rdf:resource="#ConceptMastery"/>
+        <rdfs:range rdf:resource="#Concept"/>
+        <rdf:type rdf:resource="owl:FunctionalProperty"/>
+        <rdfs:label>mastery of concept</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasProficiencyLevel">
+        <rdfs:domain rdf:resource="#ConceptMastery"/>
+        <rdfs:range rdf:resource="#ProficiencyLevel"/>
+        <rdf:type rdf:resource="owl:FunctionalProperty"/>
+        <rdfs:label>has proficiency level</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasLearningGoal">
+        <rdfs:domain rdf:resource="#Learner"/>
+        <rdfs:range rdf:resource="#LearnerGoal"/>
+        <rdfs:label>has learning goal</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#goalTargetConcept">
+        <rdfs:domain rdf:resource="#ConceptGoal"/>
+        <rdfs:range rdf:resource="#Concept"/>
+        <rdf:type rdf:resource="owl:FunctionalProperty"/>
+        <rdfs:label>goal target concept</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#goalTargetRole">
+        <rdfs:domain rdf:resource="#CareerGoal"/>
+        <rdfs:range rdf:resource="#CareerRole"/>
+        <rdf:type rdf:resource="owl:FunctionalProperty"/>
+        <rdfs:label>goal target role</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasLearningStyle">
+        <rdfs:domain rdf:resource="#Learner"/>
+        <rdfs:range rdf:resource="#LearningStyle"/>
+        <rdfs:label>has learning style</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasBackground">
+        <rdfs:domain rdf:resource="#Learner"/>
+        <rdfs:range rdf:resource="#AcademicBackground"/>
+        <rdfs:label>has background</rdfs:label>
+    </owl:ObjectProperty>
+
+    <!-- Career -->
+    <owl:ObjectProperty rdf:about="#requiresSkill">
+        <rdfs:domain rdf:resource="#CareerRole"/>
+        <rdfs:range rdf:resource="#SkillRequirement"/>
+        <rdfs:label>requires skill</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#skillConcept">
+        <rdfs:domain rdf:resource="#SkillRequirement"/>
+        <rdfs:range rdf:resource="#Concept"/>
+        <rdf:type rdf:resource="owl:FunctionalProperty"/>
+        <rdfs:label>skill concept</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#requiredProficiency">
+        <rdfs:domain rdf:resource="#SkillRequirement"/>
+        <rdfs:range rdf:resource="#ProficiencyLevel"/>
+        <rdf:type rdf:resource="owl:FunctionalProperty"/>
+        <rdfs:label>required proficiency</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#roleInIndustry">
+        <rdfs:domain rdf:resource="#CareerRole"/>
+        <rdfs:range rdf:resource="#IndustryContext"/>
+        <rdfs:label>role in industry</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#specializationOf">
+        <rdfs:domain rdf:resource="#CareerRole"/>
+        <rdfs:range rdf:resource="#CareerRole"/>
+        <rdfs:label>specialization of</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#leadsToRole">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="#CareerRole"/>
+        <rdfs:label>leads to role</rdfs:label>
+        <rdfs:comment>Mastering this concept is a significant contributor toward qualifying for this career role.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#opensPathTo">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="#Concept"/>
+        <rdfs:label>opens path to</rdfs:label>
+        <rdfs:comment>Knowing this concept makes the target concept accessible (broader than direct prerequisite).</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <!-- Learning Resources -->
+    <owl:ObjectProperty rdf:about="#teachesConcept">
+        <rdfs:domain rdf:resource="#LearningResource"/>
+        <rdfs:range rdf:resource="#Concept"/>
+        <rdfs:label>teaches concept</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#primaryConcept">
+        <rdfs:domain rdf:resource="#LearningResource"/>
+        <rdfs:range rdf:resource="#Concept"/>
+        <rdfs:label>primary concept</rdfs:label>
+        <rdfs:comment>The main concept this resource is designed to teach.</rdfs:comment>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#suitableForLevel">
+        <rdfs:domain rdf:resource="#LearningResource"/>
+        <rdfs:range rdf:resource="#ProficiencyLevel"/>
+        <rdfs:label>suitable for level</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#suitableForStyle">
+        <rdfs:domain rdf:resource="#LearningResource"/>
+        <rdfs:range rdf:resource="#LearningStyle"/>
+        <rdfs:label>suitable for style</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#offeredBy">
+        <rdfs:domain rdf:resource="#LearningResource"/>
+        <rdfs:range rdf:resource="#LearningProvider"/>
+        <rdfs:label>offered by</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#leadsToCertification">
+        <rdfs:domain rdf:resource="#Course"/>
+        <rdfs:range rdf:resource="#Certification"/>
+        <rdfs:label>leads to certification</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#certificationValidatesSkill">
+        <rdfs:domain rdf:resource="#Certification"/>
+        <rdfs:range rdf:resource="#Concept"/>
+        <rdfs:label>certification validates skill</rdfs:label>
+    </owl:ObjectProperty>
+
+    <!-- Learning Path -->
+    <owl:ObjectProperty rdf:about="#hasLearningPath">
+        <rdfs:domain rdf:resource="#LearnerGoal"/>
+        <rdfs:range rdf:resource="#LearningPath"/>
+        <rdfs:label>has learning path</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#pathHasMilestone">
+        <rdfs:domain rdf:resource="#LearningPath"/>
+        <rdfs:range rdf:resource="#LearningMilestone"/>
+        <rdfs:label>path has milestone</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#milestoneTargetConcept">
+        <rdfs:domain rdf:resource="#LearningMilestone"/>
+        <rdfs:range rdf:resource="#Concept"/>
+        <rdf:type rdf:resource="owl:FunctionalProperty"/>
+        <rdfs:label>milestone target concept</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#recommendedResource">
+        <rdfs:domain rdf:resource="#LearningMilestone"/>
+        <rdfs:range rdf:resource="#LearningResource"/>
+        <rdfs:label>recommended resource</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#nextMilestone">
+        <rdfs:domain rdf:resource="#LearningMilestone"/>
+        <rdfs:range rdf:resource="#LearningMilestone"/>
+        <rdfs:label>next milestone</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#hasEffortEstimate">
+        <rdfs:domain rdf:resource="#LearningMilestone"/>
+        <rdfs:range rdf:resource="#EffortEstimate"/>
+        <rdfs:label>has effort estimate</rdfs:label>
+    </owl:ObjectProperty>
+
+    <owl:ObjectProperty rdf:about="#assessedBy">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="#Assessment"/>
+        <rdfs:label>assessed by</rdfs:label>
+    </owl:ObjectProperty>
+
+
+    <!-- ================================================================
+         DATA PROPERTIES
+         ================================================================ -->
+
+    <owl:DatatypeProperty rdf:about="#conceptName">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#conceptDescription">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#difficultyScore">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="xsd:integer"/>
+        <rdfs:comment>1 (beginner) to 10 (research frontier)</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#abstractionLevel">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+        <rdfs:comment>Foundational | Intermediate | Advanced | Research</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#typicalStudyHours">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="xsd:integer"/>
+        <rdfs:comment>Estimated hours to reach working proficiency from zero</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#yearIntroduced">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="xsd:integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#isActiveResearchArea">
+        <rdfs:domain rdf:resource="#Concept"/>
+        <rdfs:range rdf:resource="xsd:boolean"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#learnerID">
+        <rdfs:domain rdf:resource="#Learner"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+        <rdf:type rdf:resource="owl:FunctionalProperty"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#learnerName">
+        <rdfs:domain rdf:resource="#Learner"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#learnerEmail">
+        <rdfs:domain rdf:resource="#Learner"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#currentSemester">
+        <rdfs:domain rdf:resource="#Learner"/>
+        <rdfs:range rdf:resource="xsd:integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#proficiencyLabel">
+        <rdfs:domain rdf:resource="#ProficiencyLevel"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#proficiencyScore">
+        <rdfs:domain rdf:resource="#ProficiencyLevel"/>
+        <rdfs:range rdf:resource="xsd:integer"/>
+        <rdfs:comment>1=Awareness, 2=Basic, 3=Working, 4=Proficient, 5=Expert</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#masteryScore">
+        <rdfs:domain rdf:resource="#ConceptMastery"/>
+        <rdfs:range rdf:resource="xsd:float"/>
+        <rdfs:comment>0.0 to 1.0 representing mastery percentage</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#resourceTitle">
+        <rdfs:domain rdf:resource="#LearningResource"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#resourceURL">
+        <rdfs:domain rdf:resource="#LearningResource"/>
+        <rdfs:range rdf:resource="xsd:anyURI"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#resourceDurationHours">
+        <rdfs:domain rdf:resource="#LearningResource"/>
+        <rdfs:range rdf:resource="xsd:float"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#isFree">
+        <rdfs:domain rdf:resource="#LearningResource"/>
+        <rdfs:range rdf:resource="xsd:boolean"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#qualityRating">
+        <rdfs:domain rdf:resource="#LearningResource"/>
+        <rdfs:range rdf:resource="xsd:float"/>
+        <rdfs:comment>Community quality rating 1.0 to 5.0</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#publicationYear">
+        <rdfs:domain rdf:resource="#LearningResource"/>
+        <rdfs:range rdf:resource="xsd:integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#roleName">
+        <rdfs:domain rdf:resource="#CareerRole"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#roleDescription">
+        <rdfs:domain rdf:resource="#CareerRole"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#averageSalaryUSD">
+        <rdfs:domain rdf:resource="#CareerRole"/>
+        <rdfs:range rdf:resource="xsd:integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#demandLevel">
+        <rdfs:domain rdf:resource="#CareerRole"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+        <rdfs:comment>High | Medium | Low</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#estimatedWeeks">
+        <rdfs:domain rdf:resource="#EffortEstimate"/>
+        <rdfs:range rdf:resource="xsd:integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#hoursPerWeek">
+        <rdfs:domain rdf:resource="#EffortEstimate"/>
+        <rdfs:range rdf:resource="xsd:integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#milestoneOrder">
+        <rdfs:domain rdf:resource="#LearningMilestone"/>
+        <rdfs:range rdf:resource="xsd:integer"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#domainName">
+        <rdfs:domain rdf:resource="#Domain"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#subdomainName">
+        <rdfs:domain rdf:resource="#Subdomain"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#providerName">
+        <rdfs:domain rdf:resource="#LearningProvider"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#certificationName">
+        <rdfs:domain rdf:resource="#Certification"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#isSkillRequired">
+        <rdfs:domain rdf:resource="#SkillRequirement"/>
+        <rdfs:range rdf:resource="xsd:boolean"/>
+        <rdfs:comment>true = mandatory, false = nice-to-have</rdfs:comment>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#goalDescription">
+        <rdfs:domain rdf:resource="#LearnerGoal"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#pathName">
+        <rdfs:domain rdf:resource="#LearningPath"/>
+        <rdfs:range rdf:resource="xsd:string"/>
+    </owl:DatatypeProperty>
+
+    <owl:DatatypeProperty rdf:about="#totalEstimatedHours">
+        <rdfs:domain rdf:resource="#LearningPath"/>
+        <rdfs:range rdf:resource="xsd:integer"/>
+    </owl:DatatypeProperty>
+
+
+    <!-- ================================================================
+         CLASS HIERARCHY  (~52 classes)
+         ================================================================ -->
+
+    <!-- ── DOMAIN / KNOWLEDGE STRUCTURE ── -->
+
+    <owl:Class rdf:about="#Domain">
+        <rdfs:label>Domain</rdfs:label>
+        <rdfs:comment>A high-level knowledge domain in CS or AI (e.g. Machine Learning, Systems, Theory).</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Subdomain">
+        <rdfs:label>Subdomain</rdfs:label>
+        <rdfs:comment>A focused area within a Domain (e.g. Computer Vision within Machine Learning).</rdfs:comment>
+    </owl:Class>
+
+    <!-- ── CONCEPT HIERARCHY ── -->
+
+    <owl:Class rdf:about="#Concept">
+        <rdfs:label>Concept</rdfs:label>
+        <rdfs:comment>An atomic unit of knowledge — a technique, algorithm, theory, or framework a learner can study and master.</rdfs:comment>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#belongsToDomain"/>
+                <owl:minCardinality rdf:datatype="xsd:nonNegativeInteger">1</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="#FoundationalConcept">
+        <rdfs:subClassOf rdf:resource="#Concept"/>
+        <rdfs:label>Foundational Concept</rdfs:label>
+        <rdfs:comment>A concept with no or minimal prerequisites — entry-level knowledge.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#IntermediateConcept">
+        <rdfs:subClassOf rdf:resource="#Concept"/>
+        <rdfs:label>Intermediate Concept</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#AdvancedConcept">
+        <rdfs:subClassOf rdf:resource="#Concept"/>
+        <rdfs:label>Advanced Concept</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ResearchFrontierConcept">
+        <rdfs:subClassOf rdf:resource="#AdvancedConcept"/>
+        <rdfs:label>Research Frontier Concept</rdfs:label>
+        <rdfs:comment>Cutting-edge concepts that are active areas of academic research.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#MathematicalConcept">
+        <rdfs:subClassOf rdf:resource="#Concept"/>
+        <rdfs:label>Mathematical Concept</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#AlgorithmicConcept">
+        <rdfs:subClassOf rdf:resource="#Concept"/>
+        <rdfs:label>Algorithmic Concept</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#SystemsConcept">
+        <rdfs:subClassOf rdf:resource="#Concept"/>
+        <rdfs:label>Systems Concept</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#TheoreticalConcept">
+        <rdfs:subClassOf rdf:resource="#Concept"/>
+        <rdfs:label>Theoretical Concept</rdfs:label>
+    </owl:Class>
+
+    <!-- Disjoint: foundational vs research frontier -->
+    <owl:AllDisjointClasses>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#FoundationalConcept"/>
+            <rdf:Description rdf:about="#ResearchFrontierConcept"/>
+        </owl:members>
+    </owl:AllDisjointClasses>
+
+    <!-- ── PROFICIENCY LEVELS ── -->
+
+    <owl:Class rdf:about="#ProficiencyLevel">
+        <rdfs:label>Proficiency Level</rdfs:label>
+        <rdfs:comment>An ordinal scale of knowledge mastery: Awareness → Basic → Working → Proficient → Expert</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#AwarenessLevel">
+        <rdfs:subClassOf rdf:resource="#ProficiencyLevel"/>
+        <rdfs:label>Awareness Level</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#BasicLevel">
+        <rdfs:subClassOf rdf:resource="#ProficiencyLevel"/>
+        <rdfs:label>Basic Level</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#WorkingLevel">
+        <rdfs:subClassOf rdf:resource="#ProficiencyLevel"/>
+        <rdfs:label>Working Level</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ProficientLevel">
+        <rdfs:subClassOf rdf:resource="#ProficiencyLevel"/>
+        <rdfs:label>Proficient Level</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ExpertLevel">
+        <rdfs:subClassOf rdf:resource="#ProficiencyLevel"/>
+        <rdfs:label>Expert Level</rdfs:label>
+    </owl:Class>
+
+    <owl:AllDisjointClasses>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#AwarenessLevel"/>
+            <rdf:Description rdf:about="#BasicLevel"/>
+            <rdf:Description rdf:about="#WorkingLevel"/>
+            <rdf:Description rdf:about="#ProficientLevel"/>
+            <rdf:Description rdf:about="#ExpertLevel"/>
+        </owl:members>
+    </owl:AllDisjointClasses>
+
+    <!-- ── LEARNER HIERARCHY ── -->
+
+    <owl:Class rdf:about="#Learner">
+        <rdfs:label>Learner</rdfs:label>
+        <rdfs:comment>A person navigating a learning journey in CS/AI.</rdfs:comment>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#learnerID"/>
+                <owl:cardinality rdf:datatype="xsd:nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasKnowledgeState"/>
+                <owl:cardinality rdf:datatype="xsd:nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="#UndergraduateLearner">
+        <rdfs:subClassOf rdf:resource="#Learner"/>
+        <rdfs:label>Undergraduate Learner</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#PostgraduateLearner">
+        <rdfs:subClassOf rdf:resource="#Learner"/>
+        <rdfs:label>Postgraduate Learner</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#SelfDirectedLearner">
+        <rdfs:subClassOf rdf:resource="#Learner"/>
+        <rdfs:label>Self-Directed Learner</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ProfessionalLearner">
+        <rdfs:subClassOf rdf:resource="#Learner"/>
+        <rdfs:label>Professional Learner</rdfs:label>
+        <rdfs:comment>Someone already in industry seeking to upskill.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#KnowledgeState">
+        <rdfs:label>Knowledge State</rdfs:label>
+        <rdfs:comment>A snapshot of everything a learner currently knows, represented as a set of ConceptMastery instances.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ConceptMastery">
+        <rdfs:label>Concept Mastery</rdfs:label>
+        <rdfs:comment>The association between a learner's knowledge state, a specific concept, and their proficiency level in it.</rdfs:comment>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#masteryOfConcept"/>
+                <owl:cardinality rdf:datatype="xsd:nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#hasProficiencyLevel"/>
+                <owl:cardinality rdf:datatype="xsd:nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="#LearningStyle">
+        <rdfs:label>Learning Style</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#VisualLearner">
+        <rdfs:subClassOf rdf:resource="#LearningStyle"/>
+        <rdfs:label>Visual / Video Learner</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ReadingLearner">
+        <rdfs:subClassOf rdf:resource="#LearningStyle"/>
+        <rdfs:label>Reading / Writing Learner</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#HandsOnLearner">
+        <rdfs:subClassOf rdf:resource="#LearningStyle"/>
+        <rdfs:label>Hands-On / Project-Based Learner</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#AcademicBackground">
+        <rdfs:label>Academic Background</rdfs:label>
+    </owl:Class>
+
+    <!-- ── LEARNER GOALS ── -->
+
+    <owl:Class rdf:about="#LearnerGoal">
+        <rdfs:label>Learner Goal</rdfs:label>
+        <rdfs:comment>What a learner is trying to achieve — either learning a concept or reaching a career role.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ConceptGoal">
+        <rdfs:subClassOf rdf:resource="#LearnerGoal"/>
+        <rdfs:label>Concept Goal</rdfs:label>
+        <rdfs:comment>Goal to master a specific concept (e.g. "I want to learn Graph RAG").</rdfs:comment>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#goalTargetConcept"/>
+                <owl:cardinality rdf:datatype="xsd:nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="#CareerGoal">
+        <rdfs:subClassOf rdf:resource="#LearnerGoal"/>
+        <rdfs:label>Career Goal</rdfs:label>
+        <rdfs:comment>Goal to qualify for a specific career role (e.g. "I want to become a Computer Vision Engineer").</rdfs:comment>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#goalTargetRole"/>
+                <owl:cardinality rdf:datatype="xsd:nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:AllDisjointClasses>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#ConceptGoal"/>
+            <rdf:Description rdf:about="#CareerGoal"/>
+        </owl:members>
+    </owl:AllDisjointClasses>
+
+    <!-- ── CAREER HIERARCHY ── -->
+
+    <owl:Class rdf:about="#CareerRole">
+        <rdfs:label>Career Role</rdfs:label>
+        <rdfs:comment>A professional role in industry or research that requires a defined set of CS/AI skills.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ResearchRole">
+        <rdfs:subClassOf rdf:resource="#CareerRole"/>
+        <rdfs:label>Research Role</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EngineeringRole">
+        <rdfs:subClassOf rdf:resource="#CareerRole"/>
+        <rdfs:label>Engineering Role</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#DataRole">
+        <rdfs:subClassOf rdf:resource="#CareerRole"/>
+        <rdfs:label>Data Role</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ManagementRole">
+        <rdfs:subClassOf rdf:resource="#CareerRole"/>
+        <rdfs:label>Management / Leadership Role</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#SkillRequirement">
+        <rdfs:label>Skill Requirement</rdfs:label>
+        <rdfs:comment>Associates a CareerRole with a Concept at a required ProficiencyLevel.</rdfs:comment>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#skillConcept"/>
+                <owl:cardinality rdf:datatype="xsd:nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="#IndustryContext">
+        <rdfs:label>Industry Context</rdfs:label>
+    </owl:Class>
+
+    <!-- ── LEARNING RESOURCES ── -->
+
+    <owl:Class rdf:about="#LearningResource">
+        <rdfs:label>Learning Resource</rdfs:label>
+        <rdfs:comment>Any artefact a learner can use to study a concept.</rdfs:comment>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#primaryConcept"/>
+                <owl:minCardinality rdf:datatype="xsd:nonNegativeInteger">1</owl:minCardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Course">
+        <rdfs:subClassOf rdf:resource="#LearningResource"/>
+        <rdfs:label>Course</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#OnlineCourse">
+        <rdfs:subClassOf rdf:resource="#Course"/>
+        <rdfs:label>Online Course</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#UniversityCourse">
+        <rdfs:subClassOf rdf:resource="#Course"/>
+        <rdfs:label>University Course</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#ResearchPaper">
+        <rdfs:subClassOf rdf:resource="#LearningResource"/>
+        <rdfs:label>Research Paper</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#SurveyPaper">
+        <rdfs:subClassOf rdf:resource="#ResearchPaper"/>
+        <rdfs:label>Survey Paper</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#FoundationalPaper">
+        <rdfs:subClassOf rdf:resource="#ResearchPaper"/>
+        <rdfs:label>Foundational Paper</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#VideoLecture">
+        <rdfs:subClassOf rdf:resource="#LearningResource"/>
+        <rdfs:label>Video Lecture</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Book">
+        <rdfs:subClassOf rdf:resource="#LearningResource"/>
+        <rdfs:label>Book / Textbook</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Tutorial">
+        <rdfs:subClassOf rdf:resource="#LearningResource"/>
+        <rdfs:label>Tutorial / Notebook</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Assessment">
+        <rdfs:subClassOf rdf:resource="#LearningResource"/>
+        <rdfs:label>Assessment</rdfs:label>
+        <rdfs:comment>A quiz, project, or exam that measures concept mastery.</rdfs:comment>
+    </owl:Class>
+
+    <owl:AllDisjointClasses>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="#Course"/>
+            <rdf:Description rdf:about="#ResearchPaper"/>
+            <rdf:Description rdf:about="#VideoLecture"/>
+            <rdf:Description rdf:about="#Book"/>
+            <rdf:Description rdf:about="#Tutorial"/>
+            <rdf:Description rdf:about="#Assessment"/>
+        </owl:members>
+    </owl:AllDisjointClasses>
+
+    <!-- ── PROVIDERS ── -->
+
+    <owl:Class rdf:about="#LearningProvider">
+        <rdfs:label>Learning Provider</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#University">
+        <rdfs:subClassOf rdf:resource="#LearningProvider"/>
+        <rdfs:label>University</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#OnlinePlatform">
+        <rdfs:subClassOf rdf:resource="#LearningProvider"/>
+        <rdfs:label>Online Platform</rdfs:label>
+    </owl:Class>
+
+    <owl:Class rdf:about="#Certification">
+        <rdfs:label>Certification</rdfs:label>
+    </owl:Class>
+
+    <!-- ── LEARNING PATH ── -->
+
+    <owl:Class rdf:about="#LearningPath">
+        <rdfs:label>Learning Path</rdfs:label>
+        <rdfs:comment>An ordered sequence of milestones bridging a learner's current knowledge state to their goal.</rdfs:comment>
+    </owl:Class>
+
+    <owl:Class rdf:about="#LearningMilestone">
+        <rdfs:label>Learning Milestone</rdfs:label>
+        <rdfs:comment>A single step in a learning path — master one concept using specific resources.</rdfs:comment>
+        <rdfs:subClassOf>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="#milestoneTargetConcept"/>
+                <owl:cardinality rdf:datatype="xsd:nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </rdfs:subClassOf>
+    </owl:Class>
+
+    <owl:Class rdf:about="#EffortEstimate">
+        <rdfs:label>Effort Estimate</rdfs:label>
+        <rdfs:comment>An estimate of the time investment required to complete a milestone.</rdfs:comment>
+    </owl:Class>
+
+
+    <!-- ================================================================
+         INDIVIDUALS
+         ================================================================ -->
+
+    <!-- ── PROFICIENCY LEVEL INDIVIDUALS ── -->
+
+    <owl:NamedIndividual rdf:about="#Awareness">
+        <rdf:type rdf:resource="#AwarenessLevel"/>
+        <el:proficiencyLabel>Awareness</el:proficiencyLabel>
+        <el:proficiencyScore rdf:datatype="xsd:integer">1</el:proficiencyScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Basic">
+        <rdf:type rdf:resource="#BasicLevel"/>
+        <el:proficiencyLabel>Basic</el:proficiencyLabel>
+        <el:proficiencyScore rdf:datatype="xsd:integer">2</el:proficiencyScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Working">
+        <rdf:type rdf:resource="#WorkingLevel"/>
+        <el:proficiencyLabel>Working</el:proficiencyLabel>
+        <el:proficiencyScore rdf:datatype="xsd:integer">3</el:proficiencyScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Proficient">
+        <rdf:type rdf:resource="#ProficientLevel"/>
+        <el:proficiencyLabel>Proficient</el:proficiencyLabel>
+        <el:proficiencyScore rdf:datatype="xsd:integer">4</el:proficiencyScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Expert">
+        <rdf:type rdf:resource="#ExpertLevel"/>
+        <el:proficiencyLabel>Expert</el:proficiencyLabel>
+        <el:proficiencyScore rdf:datatype="xsd:integer">5</el:proficiencyScore>
+    </owl:NamedIndividual>
+
+    <!-- ── LEARNING STYLES ── -->
+
+    <owl:NamedIndividual rdf:about="#StyleVisual">
+        <rdf:type rdf:resource="#VisualLearner"/>
+        <rdfs:label>Visual / Video</rdfs:label>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#StyleReading">
+        <rdf:type rdf:resource="#ReadingLearner"/>
+        <rdfs:label>Reading / Writing</rdfs:label>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#StyleHandsOn">
+        <rdf:type rdf:resource="#HandsOnLearner"/>
+        <rdfs:label>Hands-On / Projects</rdfs:label>
+    </owl:NamedIndividual>
+
+    <!-- ── DOMAINS ── -->
+
+    <owl:NamedIndividual rdf:about="#DomainMathematics">
+        <rdf:type rdf:resource="#Domain"/>
+        <el:domainName>Mathematics</el:domainName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#DomainMachineLearning">
+        <rdf:type rdf:resource="#Domain"/>
+        <el:domainName>Machine Learning</el:domainName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#DomainNLP">
+        <rdf:type rdf:resource="#Domain"/>
+        <el:domainName>Natural Language Processing</el:domainName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#DomainComputerVision">
+        <rdf:type rdf:resource="#Domain"/>
+        <el:domainName>Computer Vision</el:domainName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#DomainGraphs">
+        <rdf:type rdf:resource="#Domain"/>
+        <el:domainName>Graph Theory and Graph ML</el:domainName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#DomainSystems">
+        <rdf:type rdf:resource="#Domain"/>
+        <el:domainName>Systems and Software Engineering</el:domainName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#DomainProgramming">
+        <rdf:type rdf:resource="#Domain"/>
+        <el:domainName>Programming and Algorithms</el:domainName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#DomainDataEngineering">
+        <rdf:type rdf:resource="#Domain"/>
+        <el:domainName>Data Engineering</el:domainName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#DomainInformationRetrieval">
+        <rdf:type rdf:resource="#Domain"/>
+        <el:domainName>Information Retrieval</el:domainName>
+    </owl:NamedIndividual>
+
+    <!-- ── SUBDOMAINS ── -->
+
+    <owl:NamedIndividual rdf:about="#SubdomainDeepLearning">
+        <rdf:type rdf:resource="#Subdomain"/>
+        <el:subdomainName>Deep Learning</el:subdomainName>
+        <el:subdomainOf rdf:resource="#DomainMachineLearning"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#SubdomainGenerativeAI">
+        <rdf:type rdf:resource="#Subdomain"/>
+        <el:subdomainName>Generative AI</el:subdomainName>
+        <el:subdomainOf rdf:resource="#DomainMachineLearning"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#SubdomainLinearAlgebra">
+        <rdf:type rdf:resource="#Subdomain"/>
+        <el:subdomainName>Linear Algebra</el:subdomainName>
+        <el:subdomainOf rdf:resource="#DomainMathematics"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#SubdomainGraphML">
+        <rdf:type rdf:resource="#Subdomain"/>
+        <el:subdomainName>Graph Machine Learning</el:subdomainName>
+        <el:subdomainOf rdf:resource="#DomainGraphs"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#SubdomainObjectDetection">
+        <rdf:type rdf:resource="#Subdomain"/>
+        <el:subdomainName>Object Detection and Recognition</el:subdomainName>
+        <el:subdomainOf rdf:resource="#DomainComputerVision"/>
+    </owl:NamedIndividual>
+
+    <!-- ═══════════════════════════════════════════════════
+         CONCEPT INSTANCES — THE KNOWLEDGE GRAPH
+         This is the deep prerequisite chain from
+         pure foundations all the way to Graph RAG,
+         LLMs, and Computer Vision research frontiers.
+         ═══════════════════════════════════════════════════ -->
+
+    <!-- LAYER 0 — Pure Foundations -->
+
+    <owl:NamedIndividual rdf:about="#LinearAlgebra">
+        <rdf:type rdf:resource="#MathematicalConcept"/>
+        <rdf:type rdf:resource="#FoundationalConcept"/>
+        <el:conceptName>Linear Algebra</el:conceptName>
+        <el:conceptDescription>Vectors, matrices, matrix multiplication, eigenvalues, SVD — the mathematical backbone of all ML.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">3</el:difficultyScore>
+        <el:abstractionLevel>Foundational</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">60</el:typicalStudyHours>
+        <el:belongsToDomain rdf:resource="#DomainMathematics"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainLinearAlgebra"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Calculus">
+        <rdf:type rdf:resource="#MathematicalConcept"/>
+        <rdf:type rdf:resource="#FoundationalConcept"/>
+        <el:conceptName>Calculus and Multivariable Calculus</el:conceptName>
+        <el:conceptDescription>Differentiation, integration, chain rule, partial derivatives, gradient — essential for understanding optimisation.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">3</el:difficultyScore>
+        <el:abstractionLevel>Foundational</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">60</el:typicalStudyHours>
+        <el:belongsToDomain rdf:resource="#DomainMathematics"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Probability">
+        <rdf:type rdf:resource="#MathematicalConcept"/>
+        <rdf:type rdf:resource="#FoundationalConcept"/>
+        <el:conceptName>Probability and Statistics</el:conceptName>
+        <el:conceptDescription>Random variables, distributions, Bayes theorem, expectation, variance, hypothesis testing.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">3</el:difficultyScore>
+        <el:abstractionLevel>Foundational</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">50</el:typicalStudyHours>
+        <el:belongsToDomain rdf:resource="#DomainMathematics"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Programming">
+        <rdf:type rdf:resource="#FoundationalConcept"/>
+        <el:conceptName>Programming Fundamentals (Python)</el:conceptName>
+        <el:conceptDescription>Variables, control flow, functions, OOP, libraries — the basic programming skill assumed by all ML frameworks.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">2</el:difficultyScore>
+        <el:abstractionLevel>Foundational</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">40</el:typicalStudyHours>
+        <el:belongsToDomain rdf:resource="#DomainProgramming"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#DataStructures">
+        <rdf:type rdf:resource="#FoundationalConcept"/>
+        <rdf:type rdf:resource="#AlgorithmicConcept"/>
+        <el:conceptName>Data Structures and Algorithms</el:conceptName>
+        <el:conceptDescription>Arrays, trees, graphs, hash maps, sorting, searching, complexity analysis.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">4</el:difficultyScore>
+        <el:abstractionLevel>Foundational</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">80</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#Programming"/>
+        <el:belongsToDomain rdf:resource="#DomainProgramming"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GraphTheory">
+        <rdf:type rdf:resource="#FoundationalConcept"/>
+        <rdf:type rdf:resource="#MathematicalConcept"/>
+        <el:conceptName>Graph Theory</el:conceptName>
+        <el:conceptDescription>Nodes, edges, directed/undirected graphs, paths, connectivity, adjacency matrices, graph traversal algorithms.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">4</el:difficultyScore>
+        <el:abstractionLevel>Foundational</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">40</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#DataStructures"/>
+        <el:hasPrerequisite rdf:resource="#LinearAlgebra"/>
+        <el:belongsToDomain rdf:resource="#DomainGraphs"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER 1 — Core ML -->
+
+    <owl:NamedIndividual rdf:about="#MachineLearningFoundations">
+        <rdf:type rdf:resource="#IntermediateConcept"/>
+        <rdf:type rdf:resource="#AlgorithmicConcept"/>
+        <el:conceptName>Machine Learning Foundations</el:conceptName>
+        <el:conceptDescription>Supervised/unsupervised learning, loss functions, gradient descent, overfitting, cross-validation, classic ML models (regression, SVM, trees).</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">5</el:difficultyScore>
+        <el:abstractionLevel>Intermediate</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">80</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#LinearAlgebra"/>
+        <el:hasPrerequisite rdf:resource="#Calculus"/>
+        <el:hasPrerequisite rdf:resource="#Probability"/>
+        <el:hasPrerequisite rdf:resource="#Programming"/>
+        <el:belongsToDomain rdf:resource="#DomainMachineLearning"/>
+        <el:leadsToRole rdf:resource="#DataScientist"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#NeuralNetworks">
+        <rdf:type rdf:resource="#IntermediateConcept"/>
+        <el:conceptName>Neural Networks and Backpropagation</el:conceptName>
+        <el:conceptDescription>Perceptrons, activation functions, forward pass, backpropagation, weight initialisation, basic architectures (MLP).</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">5</el:difficultyScore>
+        <el:abstractionLevel>Intermediate</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">60</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#MachineLearningFoundations"/>
+        <el:hasPrerequisite rdf:resource="#LinearAlgebra"/>
+        <el:hasPrerequisite rdf:resource="#Calculus"/>
+        <el:belongsToDomain rdf:resource="#DomainMachineLearning"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainDeepLearning"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER 2 — Deep Learning Specialisations -->
+
+    <owl:NamedIndividual rdf:about="#CNNs">
+        <rdf:type rdf:resource="#IntermediateConcept"/>
+        <el:conceptName>Convolutional Neural Networks (CNNs)</el:conceptName>
+        <el:conceptDescription>Convolution operation, pooling, feature maps, classic architectures (AlexNet, VGG, ResNet, EfficientNet). Core of computer vision.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">6</el:difficultyScore>
+        <el:abstractionLevel>Intermediate</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">60</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#NeuralNetworks"/>
+        <el:belongsToDomain rdf:resource="#DomainComputerVision"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainDeepLearning"/>
+        <el:leadsToRole rdf:resource="#ComputerVisionEngineer"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#RNNs">
+        <rdf:type rdf:resource="#IntermediateConcept"/>
+        <el:conceptName>Recurrent Neural Networks (RNNs, LSTMs, GRUs)</el:conceptName>
+        <el:conceptDescription>Sequential modelling, vanishing gradients, LSTM gating mechanism, GRU — precursor to modern NLP architectures.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">6</el:difficultyScore>
+        <el:abstractionLevel>Intermediate</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">50</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#NeuralNetworks"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainDeepLearning"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER 3 — Attention & Transformers -->
+
+    <owl:NamedIndividual rdf:about="#AttentionMechanism">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <el:conceptName>Attention Mechanism</el:conceptName>
+        <el:conceptDescription>Scaled dot-product attention, query-key-value formulation, self-attention, cross-attention. The conceptual core of the Transformer.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">7</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">30</el:typicalStudyHours>
+        <el:yearIntroduced rdf:datatype="xsd:integer">2015</el:yearIntroduced>
+        <el:hasPrerequisite rdf:resource="#RNNs"/>
+        <el:hasPrerequisite rdf:resource="#LinearAlgebra"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:opensPathTo rdf:resource="#TransformerArchitecture"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#TransformerArchitecture">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <el:conceptName>Transformer Architecture</el:conceptName>
+        <el:conceptDescription>Multi-head self-attention, positional encodings, encoder-decoder structure, layer normalisation, feed-forward blocks. Foundation of all modern LLMs.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">7</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">40</el:typicalStudyHours>
+        <el:yearIntroduced rdf:datatype="xsd:integer">2017</el:yearIntroduced>
+        <el:hasPrerequisite rdf:resource="#AttentionMechanism"/>
+        <el:hasPrerequisite rdf:resource="#NeuralNetworks"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainDeepLearning"/>
+        <el:leadsToRole rdf:resource="#NLPEngineer"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER 4 — Word/Sentence Representations -->
+
+    <owl:NamedIndividual rdf:about="#WordEmbeddings">
+        <rdf:type rdf:resource="#IntermediateConcept"/>
+        <el:conceptName>Word Embeddings (Word2Vec, GloVe, FastText)</el:conceptName>
+        <el:conceptDescription>Distributional semantics, co-occurrence, dense vector representations of words in semantic space.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">5</el:difficultyScore>
+        <el:abstractionLevel>Intermediate</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">20</el:typicalStudyHours>
+        <el:yearIntroduced rdf:datatype="xsd:integer">2013</el:yearIntroduced>
+        <el:hasPrerequisite rdf:resource="#MachineLearningFoundations"/>
+        <el:hasPrerequisite rdf:resource="#LinearAlgebra"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:opensPathTo rdf:resource="#SentenceEmbeddings"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#SentenceEmbeddings">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <el:conceptName>Sentence and Document Embeddings</el:conceptName>
+        <el:conceptDescription>Sentence-BERT, contrastive learning, semantic similarity — embedding entire sentences into dense vectors used in retrieval systems.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">6</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">25</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#WordEmbeddings"/>
+        <el:hasPrerequisite rdf:resource="#TransformerArchitecture"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:opensPathTo rdf:resource="#VectorDatabases"/>
+        <el:opensPathTo rdf:resource="#RAG"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER 4 — LLMs -->
+
+    <owl:NamedIndividual rdf:about="#PretrainingFinetuning">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <el:conceptName>Pre-training and Fine-tuning Paradigm</el:conceptName>
+        <el:conceptDescription>Masked language modelling (BERT), causal language modelling (GPT), transfer learning, fine-tuning on downstream tasks.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">7</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">40</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#TransformerArchitecture"/>
+        <el:hasPrerequisite rdf:resource="#MachineLearningFoundations"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainGenerativeAI"/>
+        <el:opensPathTo rdf:resource="#LargeLanguageModels"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#LargeLanguageModels">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <rdf:type rdf:resource="#ResearchFrontierConcept"/>
+        <el:conceptName>Large Language Models (LLMs)</el:conceptName>
+        <el:conceptDescription>Scaling laws, emergent abilities, in-context learning, prompt engineering, RLHF, instruction tuning — GPT-4, Claude, LLaMA family.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">8</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">60</el:typicalStudyHours>
+        <el:yearIntroduced rdf:datatype="xsd:integer">2020</el:yearIntroduced>
+        <el:isActiveResearchArea rdf:datatype="xsd:boolean">true</el:isActiveResearchArea>
+        <el:hasPrerequisite rdf:resource="#PretrainingFinetuning"/>
+        <el:hasPrerequisite rdf:resource="#SentenceEmbeddings"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainGenerativeAI"/>
+        <el:leadsToRole rdf:resource="#AIEngineer"/>
+        <el:leadsToRole rdf:resource="#MLResearcher"/>
+        <el:opensPathTo rdf:resource="#RAG"/>
+        <el:opensPathTo rdf:resource="#LLMAgents"/>
+        <el:opensPathTo rdf:resource="#ParameterEfficientFinetuning"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#ParameterEfficientFinetuning">
+        <rdf:type rdf:resource="#ResearchFrontierConcept"/>
+        <el:conceptName>Parameter-Efficient Fine-Tuning (LoRA, QLoRA, Adapters)</el:conceptName>
+        <el:conceptDescription>Low-rank adaptation, adapter layers, prefix tuning — techniques to fine-tune LLMs without updating all parameters.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">8</el:difficultyScore>
+        <el:abstractionLevel>Research</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">30</el:typicalStudyHours>
+        <el:yearIntroduced rdf:datatype="xsd:integer">2021</el:yearIntroduced>
+        <el:isActiveResearchArea rdf:datatype="xsd:boolean">true</el:isActiveResearchArea>
+        <el:hasPrerequisite rdf:resource="#LargeLanguageModels"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainGenerativeAI"/>
+        <el:leadsToRole rdf:resource="#MLEngineer"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER 5 — Information Retrieval -->
+
+    <owl:NamedIndividual rdf:about="#InformationRetrieval">
+        <rdf:type rdf:resource="#IntermediateConcept"/>
+        <el:conceptName>Information Retrieval</el:conceptName>
+        <el:conceptDescription>TF-IDF, BM25, inverted indexes, precision/recall, relevance ranking — the classical basis of search and retrieval.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">4</el:difficultyScore>
+        <el:abstractionLevel>Intermediate</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">30</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#Probability"/>
+        <el:hasPrerequisite rdf:resource="#Programming"/>
+        <el:belongsToDomain rdf:resource="#DomainInformationRetrieval"/>
+        <el:opensPathTo rdf:resource="#VectorDatabases"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#VectorDatabases">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <rdf:type rdf:resource="#SystemsConcept"/>
+        <el:conceptName>Vector Databases and ANN Search</el:conceptName>
+        <el:conceptDescription>FAISS, Pinecone, Weaviate, Chroma — approximate nearest neighbour search, HNSW indexing, storing and querying embeddings at scale.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">6</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">25</el:typicalStudyHours>
+        <el:yearIntroduced rdf:datatype="xsd:integer">2019</el:yearIntroduced>
+        <el:hasPrerequisite rdf:resource="#SentenceEmbeddings"/>
+        <el:hasPrerequisite rdf:resource="#InformationRetrieval"/>
+        <el:belongsToDomain rdf:resource="#DomainInformationRetrieval"/>
+        <el:opensPathTo rdf:resource="#RAG"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER 6 — RAG -->
+
+    <owl:NamedIndividual rdf:about="#RAG">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <rdf:type rdf:resource="#ResearchFrontierConcept"/>
+        <el:conceptName>Retrieval-Augmented Generation (RAG)</el:conceptName>
+        <el:conceptDescription>Combining retrieval systems with generative LLMs — dense retrieval, chunk strategy, re-ranking, prompt construction, faithfulness evaluation.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">8</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">40</el:typicalStudyHours>
+        <el:yearIntroduced rdf:datatype="xsd:integer">2020</el:yearIntroduced>
+        <el:isActiveResearchArea rdf:datatype="xsd:boolean">true</el:isActiveResearchArea>
+        <el:hasPrerequisite rdf:resource="#LargeLanguageModels"/>
+        <el:hasPrerequisite rdf:resource="#VectorDatabases"/>
+        <el:hasPrerequisite rdf:resource="#SentenceEmbeddings"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainGenerativeAI"/>
+        <el:leadsToRole rdf:resource="#AIEngineer"/>
+        <el:opensPathTo rdf:resource="#GraphRAG"/>
+        <el:relatedTo rdf:resource="#KnowledgeGraphs"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER 6 — Graph ML -->
+
+    <owl:NamedIndividual rdf:about="#KnowledgeGraphs">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <el:conceptName>Knowledge Graphs</el:conceptName>
+        <el:conceptDescription>Entities and relations as triples (RDF/OWL), SPARQL querying, knowledge graph construction, completion, and embedding. Wikidata, Freebase, domain KGs.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">7</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">50</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#GraphTheory"/>
+        <el:hasPrerequisite rdf:resource="#MachineLearningFoundations"/>
+        <el:belongsToDomain rdf:resource="#DomainGraphs"/>
+        <el:opensPathTo rdf:resource="#GraphNeuralNetworks"/>
+        <el:opensPathTo rdf:resource="#GraphRAG"/>
+        <el:relatedTo rdf:resource="#RAG"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GraphNeuralNetworks">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <el:conceptName>Graph Neural Networks (GNNs)</el:conceptName>
+        <el:conceptDescription>Message passing, GCN, GraphSAGE, GAT, graph pooling — learning on graph-structured data. Used in drug discovery, social networks, recommender systems.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">8</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">60</el:typicalStudyHours>
+        <el:yearIntroduced rdf:datatype="xsd:integer">2017</el:yearIntroduced>
+        <el:isActiveResearchArea rdf:datatype="xsd:boolean">true</el:isActiveResearchArea>
+        <el:hasPrerequisite rdf:resource="#NeuralNetworks"/>
+        <el:hasPrerequisite rdf:resource="#GraphTheory"/>
+        <el:hasPrerequisite rdf:resource="#LinearAlgebra"/>
+        <el:belongsToDomain rdf:resource="#DomainGraphs"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainGraphML"/>
+        <el:leadsToRole rdf:resource="#GraphMLResearcher"/>
+        <el:opensPathTo rdf:resource="#GraphRAG"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER 7 — GRAPH RAG (the target concept from your example) -->
+
+    <owl:NamedIndividual rdf:about="#GraphRAG">
+        <rdf:type rdf:resource="#ResearchFrontierConcept"/>
+        <el:conceptName>Graph RAG</el:conceptName>
+        <el:conceptDescription>Combining knowledge graphs and graph-structured retrieval with LLMs. Uses community detection, graph traversal, and entity linking to retrieve semantically richer context than naive vector similarity. Microsoft GraphRAG, LightRAG.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">9</el:difficultyScore>
+        <el:abstractionLevel>Research</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">50</el:typicalStudyHours>
+        <el:yearIntroduced rdf:datatype="xsd:integer">2024</el:yearIntroduced>
+        <el:isActiveResearchArea rdf:datatype="xsd:boolean">true</el:isActiveResearchArea>
+        <el:hasPrerequisite rdf:resource="#RAG"/>
+        <el:hasPrerequisite rdf:resource="#KnowledgeGraphs"/>
+        <el:hasPrerequisite rdf:resource="#GraphNeuralNetworks"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:belongsToDomain rdf:resource="#DomainGraphs"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainGenerativeAI"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainGraphML"/>
+        <el:leadsToRole rdf:resource="#AIEngineer"/>
+        <el:leadsToRole rdf:resource="#MLResearcher"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER — LLM Agents (branches from LLMs) -->
+
+    <owl:NamedIndividual rdf:about="#LLMAgents">
+        <rdf:type rdf:resource="#ResearchFrontierConcept"/>
+        <el:conceptName>LLM Agents and Agentic Systems</el:conceptName>
+        <el:conceptDescription>ReAct, tool use, planning, memory, multi-agent orchestration. LLMs as autonomous agents that perceive, reason, and act. LangChain, AutoGen, CrewAI.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">9</el:difficultyScore>
+        <el:abstractionLevel>Research</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">60</el:typicalStudyHours>
+        <el:isActiveResearchArea rdf:datatype="xsd:boolean">true</el:isActiveResearchArea>
+        <el:hasPrerequisite rdf:resource="#LargeLanguageModels"/>
+        <el:hasPrerequisite rdf:resource="#RAG"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainGenerativeAI"/>
+        <el:leadsToRole rdf:resource="#AIEngineer"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER — Computer Vision chain -->
+
+    <owl:NamedIndividual rdf:about="#ObjectDetection">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <el:conceptName>Object Detection</el:conceptName>
+        <el:conceptDescription>YOLO, Faster R-CNN, SSD — localising and classifying objects in images. Anchor boxes, non-max suppression, mAP evaluation.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">7</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">50</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#CNNs"/>
+        <el:belongsToDomain rdf:resource="#DomainComputerVision"/>
+        <el:belongsToSubdomain rdf:resource="#SubdomainObjectDetection"/>
+        <el:leadsToRole rdf:resource="#ComputerVisionEngineer"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#VisionTransformers">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <rdf:type rdf:resource="#ResearchFrontierConcept"/>
+        <el:conceptName>Vision Transformers (ViT, DINO, SAM)</el:conceptName>
+        <el:conceptDescription>Applying the Transformer architecture to image patches. ViT, DeiT, DINO self-supervised vision, Segment Anything Model.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">8</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">40</el:typicalStudyHours>
+        <el:yearIntroduced rdf:datatype="xsd:integer">2020</el:yearIntroduced>
+        <el:isActiveResearchArea rdf:datatype="xsd:boolean">true</el:isActiveResearchArea>
+        <el:hasPrerequisite rdf:resource="#CNNs"/>
+        <el:hasPrerequisite rdf:resource="#TransformerArchitecture"/>
+        <el:belongsToDomain rdf:resource="#DomainComputerVision"/>
+        <el:leadsToRole rdf:resource="#ComputerVisionEngineer"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MultimodalLearning">
+        <rdf:type rdf:resource="#ResearchFrontierConcept"/>
+        <el:conceptName>Multimodal Learning (CLIP, LLaVA, GPT-4V)</el:conceptName>
+        <el:conceptDescription>Aligning vision and language modalities, contrastive pre-training, visual instruction tuning, vision-language models.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">9</el:difficultyScore>
+        <el:abstractionLevel>Research</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">50</el:typicalStudyHours>
+        <el:isActiveResearchArea rdf:datatype="xsd:boolean">true</el:isActiveResearchArea>
+        <el:hasPrerequisite rdf:resource="#VisionTransformers"/>
+        <el:hasPrerequisite rdf:resource="#LargeLanguageModels"/>
+        <el:belongsToDomain rdf:resource="#DomainComputerVision"/>
+        <el:belongsToDomain rdf:resource="#DomainNLP"/>
+        <el:leadsToRole rdf:resource="#ComputerVisionEngineer"/>
+        <el:leadsToRole rdf:resource="#MLResearcher"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER — Reinforcement Learning -->
+
+    <owl:NamedIndividual rdf:about="#ReinforcementLearning">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <el:conceptName>Reinforcement Learning</el:conceptName>
+        <el:conceptDescription>MDPs, Bellman equations, Q-learning, policy gradients, PPO, actor-critic. Learning through reward signals.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">8</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">80</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#MachineLearningFoundations"/>
+        <el:hasPrerequisite rdf:resource="#Probability"/>
+        <el:hasPrerequisite rdf:resource="#Calculus"/>
+        <el:belongsToDomain rdf:resource="#DomainMachineLearning"/>
+        <el:leadsToRole rdf:resource="#MLResearcher"/>
+        <el:leadsToRole rdf:resource="#AIEngineer"/>
+    </owl:NamedIndividual>
+
+    <!-- LAYER — MLOps / Systems -->
+
+    <owl:NamedIndividual rdf:about="#MLOps">
+        <rdf:type rdf:resource="#AdvancedConcept"/>
+        <rdf:type rdf:resource="#SystemsConcept"/>
+        <el:conceptName>MLOps and Model Deployment</el:conceptName>
+        <el:conceptDescription>ML pipelines, experiment tracking (MLflow), model serving (FastAPI, TorchServe), CI/CD for ML, containerisation, monitoring drift.</el:conceptDescription>
+        <el:difficultyScore rdf:datatype="xsd:integer">6</el:difficultyScore>
+        <el:abstractionLevel>Advanced</el:abstractionLevel>
+        <el:typicalStudyHours rdf:datatype="xsd:integer">60</el:typicalStudyHours>
+        <el:hasPrerequisite rdf:resource="#MachineLearningFoundations"/>
+        <el:hasPrerequisite rdf:resource="#Programming"/>
+        <el:belongsToDomain rdf:resource="#DomainSystems"/>
+        <el:leadsToRole rdf:resource="#MLEngineer"/>
+    </owl:NamedIndividual>
+
+    <!-- ── LEARNING PROVIDERS ── -->
+
+    <owl:NamedIndividual rdf:about="#ProviderCoursera">
+        <rdf:type rdf:resource="#OnlinePlatform"/>
+        <el:providerName>Coursera</el:providerName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#ProviderFastAI">
+        <rdf:type rdf:resource="#OnlinePlatform"/>
+        <el:providerName>fast.ai</el:providerName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#ProviderStanford">
+        <rdf:type rdf:resource="#University"/>
+        <el:providerName>Stanford University</el:providerName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#ProviderDeepLearningAI">
+        <rdf:type rdf:resource="#OnlinePlatform"/>
+        <el:providerName>DeepLearning.AI</el:providerName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#ProviderArXiv">
+        <rdf:type rdf:resource="#OnlinePlatform"/>
+        <el:providerName>arXiv</el:providerName>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#ProviderHuggingFace">
+        <rdf:type rdf:resource="#OnlinePlatform"/>
+        <el:providerName>Hugging Face</el:providerName>
+    </owl:NamedIndividual>
+
+    <!-- ── LEARNING RESOURCES ── -->
+
+    <owl:NamedIndividual rdf:about="#CourseDeepLearningSpecialisation">
+        <rdf:type rdf:resource="#OnlineCourse"/>
+        <el:resourceTitle>Deep Learning Specialisation</el:resourceTitle>
+        <el:resourceDurationHours rdf:datatype="xsd:float">80.0</el:resourceDurationHours>
+        <el:isFree rdf:datatype="xsd:boolean">false</el:isFree>
+        <el:qualityRating rdf:datatype="xsd:float">4.9</el:qualityRating>
+        <el:primaryConcept rdf:resource="#NeuralNetworks"/>
+        <el:teachesConcept rdf:resource="#NeuralNetworks"/>
+        <el:teachesConcept rdf:resource="#CNNs"/>
+        <el:teachesConcept rdf:resource="#RNNs"/>
+        <el:teachesConcept rdf:resource="#TransformerArchitecture"/>
+        <el:suitableForLevel rdf:resource="#Basic"/>
+        <el:suitableForStyle rdf:resource="#StyleVisual"/>
+        <el:offeredBy rdf:resource="#ProviderDeepLearningAI"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CourseCS229">
+        <rdf:type rdf:resource="#UniversityCourse"/>
+        <el:resourceTitle>CS229 Machine Learning (Stanford)</el:resourceTitle>
+        <el:resourceDurationHours rdf:datatype="xsd:float">120.0</el:resourceDurationHours>
+        <el:isFree rdf:datatype="xsd:boolean">true</el:isFree>
+        <el:qualityRating rdf:datatype="xsd:float">4.8</el:qualityRating>
+        <el:primaryConcept rdf:resource="#MachineLearningFoundations"/>
+        <el:teachesConcept rdf:resource="#MachineLearningFoundations"/>
+        <el:teachesConcept rdf:resource="#Probability"/>
+        <el:suitableForLevel rdf:resource="#Basic"/>
+        <el:offeredBy rdf:resource="#ProviderStanford"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#BookDeepLearningGoodfellow">
+        <rdf:type rdf:resource="#Book"/>
+        <el:resourceTitle>Deep Learning (Goodfellow, Bengio, Courville)</el:resourceTitle>
+        <el:isFree rdf:datatype="xsd:boolean">true</el:isFree>
+        <el:qualityRating rdf:datatype="xsd:float">4.8</el:qualityRating>
+        <el:publicationYear rdf:datatype="xsd:integer">2016</el:publicationYear>
+        <el:primaryConcept rdf:resource="#NeuralNetworks"/>
+        <el:teachesConcept rdf:resource="#NeuralNetworks"/>
+        <el:teachesConcept rdf:resource="#MachineLearningFoundations"/>
+        <el:suitableForLevel rdf:resource="#Working"/>
+        <el:suitableForStyle rdf:resource="#StyleReading"/>
+        <el:offeredBy rdf:resource="#ProviderStanford"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#PaperAttentionIsAllYouNeed">
+        <rdf:type rdf:resource="#FoundationalPaper"/>
+        <el:resourceTitle>Attention Is All You Need (Vaswani et al., 2017)</el:resourceTitle>
+        <el:isFree rdf:datatype="xsd:boolean">true</el:isFree>
+        <el:qualityRating rdf:datatype="xsd:float">5.0</el:qualityRating>
+        <el:publicationYear rdf:datatype="xsd:integer">2017</el:publicationYear>
+        <el:primaryConcept rdf:resource="#TransformerArchitecture"/>
+        <el:teachesConcept rdf:resource="#TransformerArchitecture"/>
+        <el:teachesConcept rdf:resource="#AttentionMechanism"/>
+        <el:suitableForLevel rdf:resource="#Working"/>
+        <el:suitableForStyle rdf:resource="#StyleReading"/>
+        <el:offeredBy rdf:resource="#ProviderArXiv"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#PaperRAGLewis2020">
+        <rdf:type rdf:resource="#FoundationalPaper"/>
+        <el:resourceTitle>Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks (Lewis et al., 2020)</el:resourceTitle>
+        <el:isFree rdf:datatype="xsd:boolean">true</el:isFree>
+        <el:qualityRating rdf:datatype="xsd:float">4.9</el:qualityRating>
+        <el:publicationYear rdf:datatype="xsd:integer">2020</el:publicationYear>
+        <el:primaryConcept rdf:resource="#RAG"/>
+        <el:teachesConcept rdf:resource="#RAG"/>
+        <el:suitableForLevel rdf:resource="#Proficient"/>
+        <el:suitableForStyle rdf:resource="#StyleReading"/>
+        <el:offeredBy rdf:resource="#ProviderArXiv"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#PaperGraphRAGMicrosoft">
+        <rdf:type rdf:resource="#FoundationalPaper"/>
+        <el:resourceTitle>From Local to Global: A Graph RAG Approach to Query-Focused Summarisation (Edge et al., 2024)</el:resourceTitle>
+        <el:isFree rdf:datatype="xsd:boolean">true</el:isFree>
+        <el:qualityRating rdf:datatype="xsd:float">4.8</el:qualityRating>
+        <el:publicationYear rdf:datatype="xsd:integer">2024</el:publicationYear>
+        <el:primaryConcept rdf:resource="#GraphRAG"/>
+        <el:teachesConcept rdf:resource="#GraphRAG"/>
+        <el:suitableForLevel rdf:resource="#Expert"/>
+        <el:suitableForStyle rdf:resource="#StyleReading"/>
+        <el:offeredBy rdf:resource="#ProviderArXiv"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#TutorialHuggingFaceNLP">
+        <rdf:type rdf:resource="#Tutorial"/>
+        <el:resourceTitle>HuggingFace NLP Course</el:resourceTitle>
+        <el:isFree rdf:datatype="xsd:boolean">true</el:isFree>
+        <el:qualityRating rdf:datatype="xsd:float">4.9</el:qualityRating>
+        <el:primaryConcept rdf:resource="#TransformerArchitecture"/>
+        <el:teachesConcept rdf:resource="#TransformerArchitecture"/>
+        <el:teachesConcept rdf:resource="#PretrainingFinetuning"/>
+        <el:suitableForLevel rdf:resource="#Working"/>
+        <el:suitableForStyle rdf:resource="#StyleHandsOn"/>
+        <el:offeredBy rdf:resource="#ProviderHuggingFace"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CourseFastAIPractical">
+        <rdf:type rdf:resource="#OnlineCourse"/>
+        <el:resourceTitle>Practical Deep Learning for Coders (fast.ai)</el:resourceTitle>
+        <el:isFree rdf:datatype="xsd:boolean">true</el:isFree>
+        <el:qualityRating rdf:datatype="xsd:float">4.8</el:qualityRating>
+        <el:primaryConcept rdf:resource="#CNNs"/>
+        <el:teachesConcept rdf:resource="#CNNs"/>
+        <el:teachesConcept rdf:resource="#NeuralNetworks"/>
+        <el:suitableForLevel rdf:resource="#Basic"/>
+        <el:suitableForStyle rdf:resource="#StyleHandsOn"/>
+        <el:offeredBy rdf:resource="#ProviderFastAI"/>
+    </owl:NamedIndividual>
+
+    <!-- ── CAREER ROLES ── -->
+
+    <owl:NamedIndividual rdf:about="#MLEngineer">
+        <rdf:type rdf:resource="#EngineeringRole"/>
+        <el:roleName>Machine Learning Engineer</el:roleName>
+        <el:roleDescription>Designs, trains, and deploys ML models in production systems. Bridges research and engineering.</el:roleDescription>
+        <el:averageSalaryUSD rdf:datatype="xsd:integer">145000</el:averageSalaryUSD>
+        <el:demandLevel>High</el:demandLevel>
+        <el:requiresSkill rdf:resource="#Skill_MLEngineer_ML"/>
+        <el:requiresSkill rdf:resource="#Skill_MLEngineer_DL"/>
+        <el:requiresSkill rdf:resource="#Skill_MLEngineer_MLOps"/>
+        <el:requiresSkill rdf:resource="#Skill_MLEngineer_Programming"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#DataScientist">
+        <rdf:type rdf:resource="#DataRole"/>
+        <el:roleName>Data Scientist</el:roleName>
+        <el:roleDescription>Applies statistical and ML techniques to extract insights from data and communicate findings.</el:roleDescription>
+        <el:averageSalaryUSD rdf:datatype="xsd:integer">120000</el:averageSalaryUSD>
+        <el:demandLevel>High</el:demandLevel>
+        <el:requiresSkill rdf:resource="#Skill_DataScientist_ML"/>
+        <el:requiresSkill rdf:resource="#Skill_DataScientist_Prob"/>
+        <el:requiresSkill rdf:resource="#Skill_DataScientist_Programming"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#AIEngineer">
+        <rdf:type rdf:resource="#EngineeringRole"/>
+        <el:roleName>AI Engineer</el:roleName>
+        <el:roleDescription>Builds LLM-powered applications, RAG systems, and AI agents. A fast-growing role at the intersection of LLMs and software engineering.</el:roleDescription>
+        <el:averageSalaryUSD rdf:datatype="xsd:integer">165000</el:averageSalaryUSD>
+        <el:demandLevel>High</el:demandLevel>
+        <el:requiresSkill rdf:resource="#Skill_AIEngineer_LLM"/>
+        <el:requiresSkill rdf:resource="#Skill_AIEngineer_RAG"/>
+        <el:requiresSkill rdf:resource="#Skill_AIEngineer_Programming"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MLResearcher">
+        <rdf:type rdf:resource="#ResearchRole"/>
+        <el:roleName>Machine Learning Researcher</el:roleName>
+        <el:roleDescription>Publishes novel ML methods, works at research labs or academia. Requires deep mathematical foundations and frontier concept knowledge.</el:roleDescription>
+        <el:averageSalaryUSD rdf:datatype="xsd:integer">175000</el:averageSalaryUSD>
+        <el:demandLevel>Medium</el:demandLevel>
+        <el:requiresSkill rdf:resource="#Skill_MLResearcher_LLM"/>
+        <el:requiresSkill rdf:resource="#Skill_MLResearcher_Math"/>
+        <el:requiresSkill rdf:resource="#Skill_MLResearcher_DL"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#ComputerVisionEngineer">
+        <rdf:type rdf:resource="#EngineeringRole"/>
+        <el:roleName>Computer Vision Engineer</el:roleName>
+        <el:roleDescription>Develops vision systems for detection, segmentation, and multimodal understanding. Works in autonomous vehicles, robotics, medical imaging.</el:roleDescription>
+        <el:averageSalaryUSD rdf:datatype="xsd:integer">150000</el:averageSalaryUSD>
+        <el:demandLevel>High</el:demandLevel>
+        <el:requiresSkill rdf:resource="#Skill_CVEngineer_CNN"/>
+        <el:requiresSkill rdf:resource="#Skill_CVEngineer_ObjectDetection"/>
+        <el:requiresSkill rdf:resource="#Skill_CVEngineer_ViT"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#NLPEngineer">
+        <rdf:type rdf:resource="#EngineeringRole"/>
+        <el:roleName>NLP Engineer</el:roleName>
+        <el:roleDescription>Builds language-understanding systems — search, chatbots, text classification, summarisation, translation.</el:roleDescription>
+        <el:averageSalaryUSD rdf:datatype="xsd:integer">140000</el:averageSalaryUSD>
+        <el:demandLevel>High</el:demandLevel>
+        <el:specializationOf rdf:resource="#MLEngineer"/>
+        <el:requiresSkill rdf:resource="#Skill_NLPEngineer_Transformer"/>
+        <el:requiresSkill rdf:resource="#Skill_NLPEngineer_Embeddings"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#GraphMLResearcher">
+        <rdf:type rdf:resource="#ResearchRole"/>
+        <el:roleName>Graph ML Researcher</el:roleName>
+        <el:roleDescription>Researches graph neural networks, knowledge graphs, and graph-based reasoning. Highly specialised.</el:roleDescription>
+        <el:averageSalaryUSD rdf:datatype="xsd:integer">170000</el:averageSalaryUSD>
+        <el:demandLevel>Medium</el:demandLevel>
+        <el:specializationOf rdf:resource="#MLResearcher"/>
+        <el:requiresSkill rdf:resource="#Skill_GraphML_GNN"/>
+        <el:requiresSkill rdf:resource="#Skill_GraphML_KG"/>
+    </owl:NamedIndividual>
+
+    <!-- ── SKILL REQUIREMENTS ── -->
+
+    <owl:NamedIndividual rdf:about="#Skill_MLEngineer_ML">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#MachineLearningFoundations"/>
+        <el:requiredProficiency rdf:resource="#Proficient"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_MLEngineer_DL">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#NeuralNetworks"/>
+        <el:requiredProficiency rdf:resource="#Proficient"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_MLEngineer_MLOps">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#MLOps"/>
+        <el:requiredProficiency rdf:resource="#Working"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_MLEngineer_Programming">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#Programming"/>
+        <el:requiredProficiency rdf:resource="#Proficient"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_DataScientist_ML">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#MachineLearningFoundations"/>
+        <el:requiredProficiency rdf:resource="#Working"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_DataScientist_Prob">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#Probability"/>
+        <el:requiredProficiency rdf:resource="#Proficient"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_DataScientist_Programming">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#Programming"/>
+        <el:requiredProficiency rdf:resource="#Working"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_AIEngineer_LLM">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#LargeLanguageModels"/>
+        <el:requiredProficiency rdf:resource="#Working"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_AIEngineer_RAG">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#RAG"/>
+        <el:requiredProficiency rdf:resource="#Working"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_AIEngineer_Programming">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#Programming"/>
+        <el:requiredProficiency rdf:resource="#Proficient"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_MLResearcher_LLM">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#LargeLanguageModels"/>
+        <el:requiredProficiency rdf:resource="#Expert"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_MLResearcher_Math">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#LinearAlgebra"/>
+        <el:requiredProficiency rdf:resource="#Expert"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_MLResearcher_DL">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#NeuralNetworks"/>
+        <el:requiredProficiency rdf:resource="#Expert"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_CVEngineer_CNN">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#CNNs"/>
+        <el:requiredProficiency rdf:resource="#Proficient"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_CVEngineer_ObjectDetection">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#ObjectDetection"/>
+        <el:requiredProficiency rdf:resource="#Working"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_CVEngineer_ViT">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#VisionTransformers"/>
+        <el:requiredProficiency rdf:resource="#Working"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">false</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_NLPEngineer_Transformer">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#TransformerArchitecture"/>
+        <el:requiredProficiency rdf:resource="#Proficient"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_NLPEngineer_Embeddings">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#SentenceEmbeddings"/>
+        <el:requiredProficiency rdf:resource="#Working"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_GraphML_GNN">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#GraphNeuralNetworks"/>
+        <el:requiredProficiency rdf:resource="#Expert"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Skill_GraphML_KG">
+        <rdf:type rdf:resource="#SkillRequirement"/>
+        <el:skillConcept rdf:resource="#KnowledgeGraphs"/>
+        <el:requiredProficiency rdf:resource="#Proficient"/>
+        <el:isSkillRequired rdf:datatype="xsd:boolean">true</el:isSkillRequired>
+    </owl:NamedIndividual>
+
+    <!-- ── LEARNERS (sample instances) ── -->
+
+    <owl:NamedIndividual rdf:about="#LearnerAli">
+        <rdf:type rdf:resource="#UndergraduateLearner"/>
+        <el:learnerID>LRN-001</el:learnerID>
+        <el:learnerName>Ali Perera</el:learnerName>
+        <el:currentSemester rdf:datatype="xsd:integer">5</el:currentSemester>
+        <el:hasKnowledgeState rdf:resource="#KS_Ali"/>
+        <el:hasLearningGoal rdf:resource="#Goal_Ali_GraphRAG"/>
+        <el:hasLearningStyle rdf:resource="#StyleVisual"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#LearnerSara">
+        <rdf:type rdf:resource="#PostgraduateLearner"/>
+        <el:learnerID>LRN-002</el:learnerID>
+        <el:learnerName>Sara Nair</el:learnerName>
+        <el:currentSemester rdf:datatype="xsd:integer">2</el:currentSemester>
+        <el:hasKnowledgeState rdf:resource="#KS_Sara"/>
+        <el:hasLearningGoal rdf:resource="#Goal_Sara_CVEngineer"/>
+        <el:hasLearningStyle rdf:resource="#StyleHandsOn"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#LearnerKumar">
+        <rdf:type rdf:resource="#ProfessionalLearner"/>
+        <el:learnerID>LRN-003</el:learnerID>
+        <el:learnerName>Kumar Fernando</el:learnerName>
+        <el:hasKnowledgeState rdf:resource="#KS_Kumar"/>
+        <el:hasLearningGoal rdf:resource="#Goal_Kumar_AIEngineer"/>
+        <el:hasLearningStyle rdf:resource="#StyleHandsOn"/>
+    </owl:NamedIndividual>
+
+    <!-- ── KNOWLEDGE STATES ── -->
+
+    <owl:NamedIndividual rdf:about="#KS_Ali">
+        <rdf:type rdf:resource="#KnowledgeState"/>
+        <el:hasConceptMastery rdf:resource="#CM_Ali_LA"/>
+        <el:hasConceptMastery rdf:resource="#CM_Ali_Calc"/>
+        <el:hasConceptMastery rdf:resource="#CM_Ali_Prob"/>
+        <el:hasConceptMastery rdf:resource="#CM_Ali_Prog"/>
+        <el:hasConceptMastery rdf:resource="#CM_Ali_ML"/>
+        <el:hasConceptMastery rdf:resource="#CM_Ali_NN"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#KS_Sara">
+        <rdf:type rdf:resource="#KnowledgeState"/>
+        <el:hasConceptMastery rdf:resource="#CM_Sara_LA"/>
+        <el:hasConceptMastery rdf:resource="#CM_Sara_Prog"/>
+        <el:hasConceptMastery rdf:resource="#CM_Sara_ML"/>
+        <el:hasConceptMastery rdf:resource="#CM_Sara_NN"/>
+        <el:hasConceptMastery rdf:resource="#CM_Sara_CNN"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#KS_Kumar">
+        <rdf:type rdf:resource="#KnowledgeState"/>
+        <el:hasConceptMastery rdf:resource="#CM_Kumar_Prog"/>
+        <el:hasConceptMastery rdf:resource="#CM_Kumar_ML"/>
+        <el:hasConceptMastery rdf:resource="#CM_Kumar_NN"/>
+        <el:hasConceptMastery rdf:resource="#CM_Kumar_LLM"/>
+    </owl:NamedIndividual>
+
+    <!-- ── CONCEPT MASTERY INSTANCES ── -->
+
+    <owl:NamedIndividual rdf:about="#CM_Ali_LA">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#LinearAlgebra"/>
+        <el:hasProficiencyLevel rdf:resource="#Working"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.70</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Ali_Calc">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#Calculus"/>
+        <el:hasProficiencyLevel rdf:resource="#Working"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.65</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Ali_Prob">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#Probability"/>
+        <el:hasProficiencyLevel rdf:resource="#Basic"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.50</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Ali_Prog">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#Programming"/>
+        <el:hasProficiencyLevel rdf:resource="#Proficient"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.85</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Ali_ML">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#MachineLearningFoundations"/>
+        <el:hasProficiencyLevel rdf:resource="#Working"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.60</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Ali_NN">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#NeuralNetworks"/>
+        <el:hasProficiencyLevel rdf:resource="#Basic"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.45</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Sara_LA">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#LinearAlgebra"/>
+        <el:hasProficiencyLevel rdf:resource="#Proficient"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.85</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Sara_Prog">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#Programming"/>
+        <el:hasProficiencyLevel rdf:resource="#Proficient"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.88</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Sara_ML">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#MachineLearningFoundations"/>
+        <el:hasProficiencyLevel rdf:resource="#Proficient"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.80</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Sara_NN">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#NeuralNetworks"/>
+        <el:hasProficiencyLevel rdf:resource="#Working"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.70</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Sara_CNN">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#CNNs"/>
+        <el:hasProficiencyLevel rdf:resource="#Working"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.65</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Kumar_Prog">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#Programming"/>
+        <el:hasProficiencyLevel rdf:resource="#Expert"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.95</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Kumar_ML">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#MachineLearningFoundations"/>
+        <el:hasProficiencyLevel rdf:resource="#Working"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.60</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Kumar_NN">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#NeuralNetworks"/>
+        <el:hasProficiencyLevel rdf:resource="#Basic"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.40</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#CM_Kumar_LLM">
+        <rdf:type rdf:resource="#ConceptMastery"/>
+        <el:masteryOfConcept rdf:resource="#LargeLanguageModels"/>
+        <el:hasProficiencyLevel rdf:resource="#Awareness"/>
+        <el:masteryScore rdf:datatype="xsd:float">0.25</el:masteryScore>
+    </owl:NamedIndividual>
+
+    <!-- ── LEARNER GOALS ── -->
+
+    <owl:NamedIndividual rdf:about="#Goal_Ali_GraphRAG">
+        <rdf:type rdf:resource="#ConceptGoal"/>
+        <el:goalDescription>Ali wants to reach Working proficiency in Graph RAG</el:goalDescription>
+        <el:goalTargetConcept rdf:resource="#GraphRAG"/>
+        <el:hasLearningPath rdf:resource="#Path_Ali_GraphRAG"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Goal_Sara_CVEngineer">
+        <rdf:type rdf:resource="#CareerGoal"/>
+        <el:goalDescription>Sara wants to become a Computer Vision Engineer</el:goalDescription>
+        <el:goalTargetRole rdf:resource="#ComputerVisionEngineer"/>
+        <el:hasLearningPath rdf:resource="#Path_Sara_CVEngineer"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Goal_Kumar_AIEngineer">
+        <rdf:type rdf:resource="#CareerGoal"/>
+        <el:goalDescription>Kumar wants to transition to an AI Engineer role from a software engineering background</el:goalDescription>
+        <el:goalTargetRole rdf:resource="#AIEngineer"/>
+        <el:hasLearningPath rdf:resource="#Path_Kumar_AIEngineer"/>
+    </owl:NamedIndividual>
+
+    <!-- ── LEARNING PATHS ── -->
+
+    <owl:NamedIndividual rdf:about="#Path_Ali_GraphRAG">
+        <rdf:type rdf:resource="#LearningPath"/>
+        <el:pathName>Ali's Path to Graph RAG</el:pathName>
+        <el:totalEstimatedHours rdf:datatype="xsd:integer">270</el:totalEstimatedHours>
+        <el:pathHasMilestone rdf:resource="#MS_Ali_1_Transformers"/>
+        <el:pathHasMilestone rdf:resource="#MS_Ali_2_Embeddings"/>
+        <el:pathHasMilestone rdf:resource="#MS_Ali_3_VectorDB"/>
+        <el:pathHasMilestone rdf:resource="#MS_Ali_4_GraphTheory"/>
+        <el:pathHasMilestone rdf:resource="#MS_Ali_5_RAG"/>
+        <el:pathHasMilestone rdf:resource="#MS_Ali_6_KG"/>
+        <el:pathHasMilestone rdf:resource="#MS_Ali_7_GNN"/>
+        <el:pathHasMilestone rdf:resource="#MS_Ali_8_GraphRAG"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Path_Sara_CVEngineer">
+        <rdf:type rdf:resource="#LearningPath"/>
+        <el:pathName>Sara's Path to Computer Vision Engineer</el:pathName>
+        <el:totalEstimatedHours rdf:datatype="xsd:integer">150</el:totalEstimatedHours>
+        <el:pathHasMilestone rdf:resource="#MS_Sara_1_ObjectDetection"/>
+        <el:pathHasMilestone rdf:resource="#MS_Sara_2_ViT"/>
+        <el:pathHasMilestone rdf:resource="#MS_Sara_3_Multimodal"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Path_Kumar_AIEngineer">
+        <rdf:type rdf:resource="#LearningPath"/>
+        <el:pathName>Kumar's Path to AI Engineer</el:pathName>
+        <el:totalEstimatedHours rdf:datatype="xsd:integer">200</el:totalEstimatedHours>
+        <el:pathHasMilestone rdf:resource="#MS_Kumar_1_Attention"/>
+        <el:pathHasMilestone rdf:resource="#MS_Kumar_2_Transformers"/>
+        <el:pathHasMilestone rdf:resource="#MS_Kumar_3_Pretraining"/>
+        <el:pathHasMilestone rdf:resource="#MS_Kumar_4_LLMs"/>
+        <el:pathHasMilestone rdf:resource="#MS_Kumar_5_Embeddings"/>
+        <el:pathHasMilestone rdf:resource="#MS_Kumar_6_RAG"/>
+    </owl:NamedIndividual>
+
+    <!-- ── MILESTONES — Ali ── -->
+
+    <owl:NamedIndividual rdf:about="#MS_Ali_1_Transformers">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">1</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#TransformerArchitecture"/>
+        <el:recommendedResource rdf:resource="#PaperAttentionIsAllYouNeed"/>
+        <el:recommendedResource rdf:resource="#TutorialHuggingFaceNLP"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Ali_1"/>
+        <el:nextMilestone rdf:resource="#MS_Ali_2_Embeddings"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Ali_1">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">4</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">10</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Ali_2_Embeddings">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">2</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#SentenceEmbeddings"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Ali_2"/>
+        <el:nextMilestone rdf:resource="#MS_Ali_3_VectorDB"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Ali_2">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">2</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">8</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Ali_3_VectorDB">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">3</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#VectorDatabases"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Ali_3"/>
+        <el:nextMilestone rdf:resource="#MS_Ali_4_GraphTheory"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Ali_3">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">2</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">8</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Ali_4_GraphTheory">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">4</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#GraphTheory"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Ali_4"/>
+        <el:nextMilestone rdf:resource="#MS_Ali_5_RAG"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Ali_4">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">3</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">8</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Ali_5_RAG">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">5</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#RAG"/>
+        <el:recommendedResource rdf:resource="#PaperRAGLewis2020"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Ali_5"/>
+        <el:nextMilestone rdf:resource="#MS_Ali_6_KG"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Ali_5">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">4</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">10</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Ali_6_KG">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">6</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#KnowledgeGraphs"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Ali_6"/>
+        <el:nextMilestone rdf:resource="#MS_Ali_7_GNN"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Ali_6">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">5</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">10</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Ali_7_GNN">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">7</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#GraphNeuralNetworks"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Ali_7"/>
+        <el:nextMilestone rdf:resource="#MS_Ali_8_GraphRAG"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Ali_7">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">6</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">10</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Ali_8_GraphRAG">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">8</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#GraphRAG"/>
+        <el:recommendedResource rdf:resource="#PaperGraphRAGMicrosoft"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Ali_8"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Ali_8">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">5</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">10</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <!-- ── MILESTONES — Sara ── -->
+
+    <owl:NamedIndividual rdf:about="#MS_Sara_1_ObjectDetection">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">1</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#ObjectDetection"/>
+        <el:recommendedResource rdf:resource="#CourseFastAIPractical"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Sara_1"/>
+        <el:nextMilestone rdf:resource="#MS_Sara_2_ViT"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Sara_1">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">5</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">10</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Sara_2_ViT">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">2</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#VisionTransformers"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Sara_2"/>
+        <el:nextMilestone rdf:resource="#MS_Sara_3_Multimodal"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Sara_2">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">4</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">10</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Sara_3_Multimodal">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">3</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#MultimodalLearning"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Sara_3"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Sara_3">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">5</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">10</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <!-- ── MILESTONES — Kumar ── -->
+
+    <owl:NamedIndividual rdf:about="#MS_Kumar_1_Attention">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">1</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#AttentionMechanism"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Kumar_1"/>
+        <el:nextMilestone rdf:resource="#MS_Kumar_2_Transformers"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Kumar_1">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">3</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">8</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Kumar_2_Transformers">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">2</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#TransformerArchitecture"/>
+        <el:recommendedResource rdf:resource="#TutorialHuggingFaceNLP"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Kumar_2"/>
+        <el:nextMilestone rdf:resource="#MS_Kumar_3_Pretraining"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Kumar_2">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">4</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">8</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Kumar_3_Pretraining">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">3</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#PretrainingFinetuning"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Kumar_3"/>
+        <el:nextMilestone rdf:resource="#MS_Kumar_4_LLMs"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Kumar_3">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">4</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">8</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Kumar_4_LLMs">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">4</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#LargeLanguageModels"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Kumar_4"/>
+        <el:nextMilestone rdf:resource="#MS_Kumar_5_Embeddings"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Kumar_4">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">6</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">10</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Kumar_5_Embeddings">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">5</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#SentenceEmbeddings"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Kumar_5"/>
+        <el:nextMilestone rdf:resource="#MS_Kumar_6_RAG"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Kumar_5">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">2</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">8</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#MS_Kumar_6_RAG">
+        <rdf:type rdf:resource="#LearningMilestone"/>
+        <el:milestoneOrder rdf:datatype="xsd:integer">6</el:milestoneOrder>
+        <el:milestoneTargetConcept rdf:resource="#RAG"/>
+        <el:recommendedResource rdf:resource="#PaperRAGLewis2020"/>
+        <el:hasEffortEstimate rdf:resource="#Effort_Kumar_6"/>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#Effort_Kumar_6">
+        <rdf:type rdf:resource="#EffortEstimate"/>
+        <el:estimatedWeeks rdf:datatype="xsd:integer">4</el:estimatedWeeks>
+        <el:hoursPerWeek rdf:datatype="xsd:integer">10</el:hoursPerWeek>
+    </owl:NamedIndividual>
+
+    <!-- ── INDUSTRY CONTEXTS ── -->
+
+    <owl:NamedIndividual rdf:about="#IndustryTech">
+        <rdf:type rdf:resource="#IndustryContext"/>
+        <rdfs:label>Technology / Software</rdfs:label>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#IndustryResearch">
+        <rdf:type rdf:resource="#IndustryContext"/>
+        <rdfs:label>Academic / Research</rdfs:label>
+    </owl:NamedIndividual>
+
+    <owl:NamedIndividual rdf:about="#IndustryHealthcare">
+        <rdf:type rdf:resource="#IndustryContext"/>
+        <rdfs:label>Healthcare / Biomedical</rdfs:label>
+    </owl:NamedIndividual>
+
+</rdf:RDF>
