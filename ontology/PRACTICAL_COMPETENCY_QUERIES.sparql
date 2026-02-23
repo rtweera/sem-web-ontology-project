@@ -1,0 +1,136 @@
+PREFIX ai: <http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+################################################################################
+# AI ONTOLOGY - PRACTICAL COMPETENCY QUESTIONS
+# These 10 questions mirror the simplicity and depth of library ontology queries
+# while exploring real AI domain scenarios
+################################################################################
+
+# CQ1: Career Path Analysis
+# Which AI subfields does a specific role (e.g., data_scientist) require knowledge of?
+SELECT ?subfield ?difficulty
+WHERE {
+  ai:data_scientist ai:needKnowldgeOf ?subfield .
+  OPTIONAL { ?subfield ai:difficultyLevel ?difficulty }
+}
+ORDER BY ?difficulty
+
+---
+
+# CQ2: Learning Resource Recommendations
+# What learning resources are recommended for a specific AI subfield (e.g., Computer_Vision) at intermediate level?
+SELECT ?resource ?type ?difficulty
+WHERE {
+  ai:image_classification rdf:type ai:Computer_Vision ;
+                          ai:recommendedResource ?resource ;
+                          ai:suitableForLevel ai:intermediate .
+  ?resource rdf:type ?type .
+  OPTIONAL { ?resource ai:difficultyLevel ?difficulty }
+}
+ORDER BY ?type ?difficulty
+
+---
+
+# CQ3: Prerequisite Chain Discovery
+# What are all the foundational subjects needed to understand Deep Learning, following the complete prerequisite chain?
+SELECT DISTINCT ?prerequisite ?type
+WHERE {
+  ai:deep_neural_networks ai:hasPrerequisite* ?prerequisite .
+  ?prerequisite rdf:type ?type .
+  FILTER (?type IN (ai:Linear_Algebra, ai:Calculus, ai:Proability_And_Statistics))
+}
+ORDER BY ?type ?prerequisite
+
+---
+
+# CQ4: Tool Ecosystem Analysis
+# Which Deep Learning frameworks are open-source, and what AI subfields use them?
+SELECT ?framework ?subfield ?isOpenSource
+WHERE {
+  ?framework rdf:type ai:Deep_Learning_Framework ;
+             ai:isOpenSource ?isOpenSource .
+  ?subfield ai:usesTool ?framework .
+  FILTER (?isOpenSource = true)
+}
+ORDER BY ?framework ?subfield
+
+---
+
+# CQ5: Job Market Insights
+# Which career roles in the AI field offer salaries above $350,000, and what skills do they require?
+SELECT ?role ?salary ?skill
+WHERE {
+  ?role rdf:type ai:Career_Role ;
+        ai:averageSalary ?salary ;
+        ai:requiresSkill ?skill .
+  FILTER (?salary > 350000)
+}
+ORDER BY DESC(?salary) ?role ?skill
+
+---
+
+# CQ6: Skill Gap Identification
+# What skills does a data scientist role require that might not be covered by a Computer Vision specialization?
+SELECT ?dataScientistSkill
+WHERE {
+  ai:data_scientist ai:requiresSkill ?dataScientistSkill .
+  ?computerVisionItem rdf:type ai:Computer_Vision .
+  FILTER NOT EXISTS { ?computerVisionItem ai:usesTool ?dataScientistSkill }
+}
+
+---
+
+# CQ7: Expert Specialization Count
+# How many different AI subfields does each knowledge level (beginner, intermediate, advanced) cover?
+SELECT ?level (COUNT(DISTINCT ?subfield) as ?subfieldCount)
+WHERE {
+  ?subfield rdf:type ai:AI_Subfield ;
+            ai:suitableForLevel ?level .
+  ?level rdf:type ai:Knowledge_Level .
+}
+GROUP BY ?level
+ORDER BY ?level
+
+---
+
+# CQ8: Topic Similarity Exploration
+# Which AI topics are related to Fuzzy Logic, and what tools do they use?
+SELECT ?topic ?tool
+WHERE {
+  ai:fuzzy_logic_1 ai:relatedTo ?topic .
+  OPTIONAL { ?topic ai:usesTool ?tool }
+}
+ORDER BY ?topic ?tool
+
+---
+
+# CQ9: Resource Type Distribution
+# What types of learning resources exist, and which AI subfields do they cover?
+SELECT ?resourceType (COUNT(?resource) as ?resourceCount) 
+       (GROUP_CONCAT(DISTINCT ?subfield; separator=", ") as ?coveredSubfields)
+WHERE {
+  ?resourceType rdfs:subClassOf ai:Learning_Resource .
+  ?resource rdf:type ?resourceType .
+  OPTIONAL {
+    ?subfield rdf:type ai:AI_Subfield ;
+              ai:recommendedResource ?resource .
+  }
+}
+GROUP BY ?resourceType
+ORDER BY DESC(?resourceCount)
+
+---
+
+# CQ10: Comprehensive Career Profile
+# For a given career role, list all required knowledge areas, skills, recommended resources, and salary information
+SELECT ?knowledge ?skill (COUNT(?resource) as ?resourceCount) ?salary
+WHERE {
+  ai:ml_engineer ai:needKnowldgeOf ?knowledge ;
+                 ai:requiresSkill ?skill ;
+                 ai:averageSalary ?salary .
+  OPTIONAL { ?knowledge ai:recommendedResource ?resource }
+}
+GROUP BY ?knowledge ?skill ?salary
+ORDER BY ?knowledge ?skill

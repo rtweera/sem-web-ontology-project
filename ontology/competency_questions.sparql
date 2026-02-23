@@ -2,11 +2,11 @@ PREFIX ai: <http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#>
 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
-# ENHANCED Q1: Career Pathway Planning with Aggregations and Optional Resources
+# [OK] ENHANCED Q1: Career Pathway Planning with Aggregations and Optional Resources
 # What are all the AI subfields that a Machine Learning Engineer needs to know, 
 # and what are their prerequisites? Include tool count and optional difficulty levels.
 SELECT ?subfield ?prerequisite (COUNT(DISTINCT ?tool) as ?toolCount) 
-       (MIN(?difficulty) as ?minDifficulty) (MAX(?difficulty) as ?maxDifficulty)
+      (MAX(?difficulty) as ?difficulty) 
 WHERE {
   ai:ml_engineer ai:needKnowldgeOf ?subfield .
   ?subfield ai:hasPrerequisite ?prerequisite .
@@ -19,7 +19,7 @@ ORDER BY DESC(?toolCount)
 
 ---
 
-# ENHANCED Q2: Tool Requirements with Filtering and Union
+# [BAD] ENHANCED Q2: Tool Requirements with Filtering and Union
 # Which Deep Learning Frameworks are open-source? 
 # Also include Vision Engineer skills with open-source constraint and aggregation
 SELECT ?framework ?openSource (COUNT(?skill) as ?skillCount)
@@ -43,7 +43,7 @@ ORDER BY DESC(?skillCount)
 
 ---
 
-# ENHANCED Q3: Prerequisites Hierarchy with Optional and MINUS
+# [BAD] ENHANCED Q3: Prerequisites Hierarchy with Optional and MINUS
 # What are all foundational subjects needed to understand Deep Learning?
 # Also exclude those that are prerequisites of other topics
 SELECT DISTINCT ?prerequisite (COUNT(?user) as ?usageCount)
@@ -107,7 +107,7 @@ ORDER BY DESC(?salary) DESC(?specializationCount)
 
 ---
 
-# ENHANCED Q7: Tool Adoption with Union and Aggregations
+# [BAD] ENHANCED Q7: Tool Adoption with Union and Aggregations
 # AI subfields using PyTorch OR TensorFlow with prerequisite chains
 SELECT ?subfield ?tool (COUNT(?prerequisites) as ?prerequisiteChainLength)
 WHERE {
@@ -127,7 +127,7 @@ ORDER BY DESC(?prerequisiteChainLength)
 
 ---
 
-# ENHANCED Q8: Similarity and Related Concepts with Minus and Optional
+# [OK] ENHANCED Q8: Similarity and Related Concepts with Minus and Optional
 # Topics related to Fuzzy Logic with difficulty levels, excluding those already advanced
 SELECT ?topic ?level (COUNT(?tool) as ?toolCount)
 WHERE {
@@ -141,12 +141,15 @@ ORDER BY ?level DESC(?toolCount)
 
 ---
 
-# ENHANCED Q9: Type Hierarchy with Optional Metadata
+# [VERY NICE] ENHANCED Q9: Type Hierarchy with Optional Metadata
 # Learning Resource types and instances with optional difficulty and availability
-SELECT ?resourceType ?instance (COUNT(?attribute) as ?attributeCount)
+
+SELECT ?resourceType ?instance (?displayUri as ?URL)
 WHERE {
   ?resourceType rdfs:subClassOf ai:Learning_Resource .
   ?instance rdf:type ?resourceType .
+  
+  # calculate the sorting order
   OPTIONAL { 
     { ?instance ai:difficultyLevel ?attribute }
     UNION
@@ -154,13 +157,21 @@ WHERE {
     UNION
     { ?instance ai:suitableForLevel ?attribute }
   }
+  
+  # Fetch the specific URI data property
+  OPTIONAL { 
+    ?instance ai:resourceURL ?uri . 
+  }
+  
+  # STR() removes the datatype, COALESCE handles the "no uri" fallback
+  BIND(COALESCE(STR(?uri), "no uri") AS ?displayUri)
 }
-GROUP BY ?resourceType ?instance
-ORDER BY DESC(?attributeCount)
+GROUP BY ?resourceType ?instance ?displayUri
+ORDER BY DESC(COUNT(?attribute))
 
 ---
 
-# ENHANCED Q10: Disjoint Class Verification with Aggregations
+# [BAD] ENHANCED Q10: Disjoint Class Verification with Aggregations
 # List AI Subfields and Career Roles to verify disjointness
 # Count connections for each entity
 SELECT ?subfield (COUNT(?subfield_uses) as ?subfield_tools) 
@@ -177,7 +188,7 @@ LIMIT 20
 
 ---
 
-# ENHANCED Q11: Multi-Criteria Optimization with Complex Filtering
+# [good one] ENHANCED Q11: Multi-Criteria Optimization with Complex Filtering
 # Career roles: Computer Vision knowledge, high salary, open-source tools preferred
 SELECT ?role ?salary (COUNT(DISTINCT ?tool) as ?toolCount) 
        (SUM(IF(?isOpen=true, 1, 0)) as ?openSourceCount)
@@ -196,7 +207,7 @@ ORDER BY DESC(?salary) DESC(?openSourceCount)
 
 ---
 
-# ENHANCED Q12: Skill Gap Analysis with Optional and Aggregations
+# [okay-ish] ENHANCED Q12: Skill Gap Analysis with Optional and Aggregations
 # Data Scientist role skills with open-source analysis and categorization
 SELECT ?skill (COALESCE(?openSource, false) as ?isOpenSource) ?skillType 
        (COUNT(?skill) as ?frequency)
