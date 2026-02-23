@@ -1,0 +1,129 @@
+{
+  "summary": {
+    "total": 17,
+    "succeeded": 17,
+    "failed": 0,
+    "success_rate": "100.0%"
+  },
+  "results": [
+    {
+      "id": "Q1",
+      "name": "Career Pathway Planning",
+      "success": true,
+      "count": 30,
+      "message": "[OK] Success - 30 results in 0.04s"
+    },
+    {
+      "id": "Q10",
+      "name": "Disjointness and Mutual Exclusivity",
+      "success": true,
+      "count": 20,
+      "message": "[OK] Success - 20 results in 0.06s"
+    },
+    {
+      "id": "Q11",
+      "name": "Multi-Criteria Optimization",
+      "success": true,
+      "count": 2,
+      "message": "[OK] Success - 2 results in 0.03s"
+    },
+    {
+      "id": "Q12",
+      "name": "Skill Gap Analysis",
+      "success": true,
+      "count": 10,
+      "message": "[OK] Success - 10 results in 0.03s"
+    },
+    {
+      "id": "Q13",
+      "name": "Educational Pathway Validation",
+      "success": true,
+      "count": 2,
+      "message": "[OK] Success - 2 results in 0.04s"
+    },
+    {
+      "id": "Q14",
+      "name": "Ontology Class Instance Discovery",
+      "success": true,
+      "count": 5,
+      "message": "[OK] Success - 5 results in 0.01s"
+    },
+    {
+      "id": "Q15",
+      "name": "Cross-Domain Relationship Discovery",
+      "success": true,
+      "count": 3,
+      "message": "[OK] Success - 3 results in 0.01s"
+    },
+    {
+      "id": "Q16",
+      "name": "Reasoning Over Open World",
+      "success": true,
+      "count": 24,
+      "message": "[OK] Success - 24 results in 0.04s"
+    },
+    {
+      "id": "Q17",
+      "name": "Competency Validation Against Standards",
+      "success": true,
+      "count": 48,
+      "message": "[OK] Success - 48 results in 0.03s"
+    },
+    {
+      "id": "Q2",
+      "name": "Tool and Skill Requirements",
+      "success": true,
+      "count": 5,
+      "message": "[OK] Success - 5 results in 0.03s"
+    },
+    {
+      "id": "Q3",
+      "name": "Prerequisites Hierarchy",
+      "success": true,
+      "count": 5,
+      "message": "[OK] Success - 5 results in 0.01s"
+    },
+    {
+      "id": "Q4",
+      "name": "Competency-Based Job Matching",
+      "success": true,
+      "count": 4,
+      "message": "[OK] Success - 4 results in 0.04s"
+    },
+    {
+      "id": "Q5",
+      "name": "Recommended Learning Path",
+      "success": true,
+      "count": 3,
+      "message": "[OK] Success - 3 results in 0.03s"
+    },
+    {
+      "id": "Q6",
+      "name": "Salary and Compensation Analysis",
+      "success": true,
+      "count": 9,
+      "message": "[OK] Success - 9 results in 0.03s"
+    },
+    {
+      "id": "Q7",
+      "name": "Tool Adoption and Versioning",
+      "success": true,
+      "count": 18,
+      "message": "[OK] Success - 18 results in 0.03s"
+    },
+    {
+      "id": "Q8",
+      "name": "Similarity and Related Concepts",
+      "success": true,
+      "count": 6,
+      "message": "[OK] Success - 6 results in 0.03s"
+    },
+    {
+      "id": "Q9",
+      "name": "Type Hierarchy and Classification",
+      "success": true,
+      "count": 32,
+      "message": "[OK] Success - 32 results in 0.03s"
+    }
+  ]
+}

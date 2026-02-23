@@ -1,0 +1,205 @@
+PREFIX ai: <http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# Q1: Career Pathway Planning
+# What are all the AI subfields that a Machine Learning Engineer needs to know, and what are their prerequisites?
+SELECT ?subfield ?prerequisite
+WHERE {
+  ai:ml_engineer ai:needKnowldgeOf ?subfield .
+  ?subfield ai:hasPrerequisite ?prerequisite .
+}
+
+---
+
+# Q2: Tool and Skill Requirements
+# Which Deep Learning Frameworks are open-source and what are the tools required for a Vision Engineer role?
+SELECT ?framework ?openSource ?skill
+WHERE {
+  ?framework rdf:type ai:Deep_Learning_Framework ;
+             ai:isOpenSource ?openSource .
+  ai:vision_engineer ai:requiresSkill ?skill .
+}
+
+---
+
+# Q3: Prerequisites Hierarchy (Transitive)
+# What are all the foundational subjects needed to understand Deep Learning (including transitive prerequisites)?
+SELECT DISTINCT ?prerequisite
+WHERE {
+  ai:deep_neural_networks ai:hasPrerequisite* ?prerequisite .
+  ?prerequisite rdf:type ai:Foundational_Subject .
+}
+
+---
+
+# Q4: Competency-Based Job Matching
+# Which career roles are suitable for someone who knows Neural Networks and Python, seeking intermediate-level content?
+SELECT ?role
+WHERE {
+  ?role rdf:type ai:Career_Role .
+  ?role ai:needKnowldgeOf ai:neural_network_basics .
+  ai:python rdf:type ai:Skill_and_Tool .
+  ?subfield ai:usesTool ai:python ;
+            ai:suitableForLevel ai:intermediate .
+}
+
+---
+
+# Q5: Recommended Learning Path
+# For someone interested in Computer Vision, what are the suitable learning resources and their difficulty levels?
+SELECT ?resource ?level
+WHERE {
+  ai:image_classification rdf:type ai:Computer_Vision ;
+                          ai:recommendedResource ?resource ;
+                          ai:suitableForLevel ?level .
+  ?resource a ai:Learning_Resource .
+}
+
+---
+
+# Q6: Salary and Compensation Analysis
+# Which career roles have an average salary above $300,000 and what knowledge areas do they specialize in?
+SELECT ?role ?salary ?knowledge
+WHERE {
+  ?role rdf:type ai:Career_Role ;
+        ai:averageSalary ?salary ;
+        ai:needKnowldgeOf ?knowledge .
+  FILTER (?salary > 300000)
+}
+
+---
+
+# Q7: Tool Adoption and Versioning
+# List all AI subfields that use PyTorch or TensorFlow, and what prerequisite knowledge is needed?
+SELECT ?subfield ?tool ?prerequisite
+WHERE {
+  ?subfield rdf:type ai:AI_Subfield ;
+            ai:usesTool ?tool ;
+            ai:hasPrerequisite ?prerequisite .
+  FILTER (?tool = ai:pytorch || ?tool = ai:tensorflow)
+}
+
+---
+
+# Q8: Similarity and Related Concepts
+# What topics are related to Fuzzy Logic, and what are their difficulty levels?
+SELECT ?topic ?level
+WHERE {
+  ai:fuzzy_logic_1 ai:relatedTo ?topic .
+  ?topic ai:difficultyLevel ?level .
+}
+
+---
+
+# Q9: Type Hierarchy and Classification
+# What are all the Learning Resource types and their instances?
+SELECT ?resourceType ?instance
+WHERE {
+  ?resourceType rdfs:subClassOf ai:Learning_Resource .
+  ?instance rdf:type ?resourceType .
+}
+
+---
+
+# Q10: Disjointness Verification
+# List AI Subfields and Career Roles (demonstrating they are disjoint classes)
+SELECT ?subfield ?role
+WHERE {
+  ?subfield rdf:type ai:AI_Subfield .
+  ?role rdf:type ai:Career_Role .
+}
+LIMIT 20
+
+---
+
+# Q11: Multi-Criteria Optimization
+# Recommend a career role suited for someone with Computer Vision knowledge, valuing high salary and open-source tools.
+SELECT ?role ?salary ?tool ?openSource
+WHERE {
+  ?role rdf:type ai:Career_Role ;
+        ai:needKnowldgeOf ?subfield ;
+        ai:averageSalary ?salary ;
+        ai:requiresSkill ?tool .
+  ?subfield rdf:type ai:Computer_Vision .
+  ?tool ai:isOpenSource ?openSource .
+  FILTER (?salary > 350000 && ?openSource = true)
+}
+
+---
+
+# Q12: Skill Gap Analysis
+# For a Data Scientist role, list the required skills and identify which tools are open-source.
+SELECT ?skill ?openSource ?skillType
+WHERE {
+  ai:data_scientist ai:requiresSkill ?skill .
+  ?skill ai:isOpenSource ?openSource ;
+         rdf:type ?skillType .
+}
+
+---
+
+# Q13: Educational Pathway Validation
+# Check if learning Linear Algebra and PyTorch prepares someone for Computer Vision.
+SELECT ?vision_resource
+WHERE {
+  ai:linear_algebra_1 rdf:type ai:Linear_Algebra .
+  ai:pytorch rdf:type ai:Deep_Learning_Framework .
+  ?vision rdf:type ai:Computer_Vision ;
+          ai:hasPrerequisite ai:matrix_decomposition ;
+          ai:usesTool ai:pytorch ;
+          ai:recommendedResource ?vision_resource .
+}
+
+---
+
+# Q14: Ontology Class Instance Discovery
+# What are all instances of the Generative_AI subfield, their difficulty levels, and recommended resources?
+SELECT ?instance ?difficulty ?resource
+WHERE {
+  ?instance rdf:type ai:Generative_AI ;
+            ai:difficultyLevel ?difficulty ;
+            ai:recommendedResource ?resource .
+}
+
+---
+
+# Q15: Cross-Domain Relationship Discovery
+# What learning resources cover topics suitable for intermediate-level learners interested in Neural Networks and Fuzzy Logic?
+SELECT ?resource
+WHERE {
+  ?resource rdf:type ai:Learning_Resource ;
+            ai:suitableForLevel ai:intermediate .
+  {
+    ?neural rdf:type ai:Neural_Networks ;
+            ai:recommendedResource ?resource .
+  }
+  UNION
+  {
+    ?fuzzy rdf:type ai:Fuzzy_Logic ;
+           ai:recommendedResource ?resource .
+  }
+}
+
+---
+
+# Q16: Reasoning Over Open World
+# List all Career Roles and the AI Subfields they need knowledge of.
+SELECT ?role ?subfield
+WHERE {
+  ?role rdf:type ai:Career_Role ;
+        ai:needKnowldgeOf ?subfield .
+  ?subfield rdf:type ai:AI_Subfield .
+}
+
+---
+
+# Q17: Competency Validation Against Ontology Structure
+# Verify that every AI Subfield has at least 2 tools (constraint checking).
+SELECT ?subfield (COUNT(DISTINCT ?tool) as ?toolCount)
+WHERE {
+  ?subfield rdf:type ai:AI_Subfield ;
+            ai:usesTool ?tool .
+}
+GROUP BY ?subfield
+HAVING (?toolCount >= 2)

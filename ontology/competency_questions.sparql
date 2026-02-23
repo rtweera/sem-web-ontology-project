@@ -1,0 +1,301 @@
+PREFIX ai: <http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+# ENHANCED Q1: Career Pathway Planning with Aggregations and Optional Resources
+# What are all the AI subfields that a Machine Learning Engineer needs to know, 
+# and what are their prerequisites? Include tool count and optional difficulty levels.
+SELECT ?subfield ?prerequisite (COUNT(DISTINCT ?tool) as ?toolCount) 
+       (MIN(?difficulty) as ?minDifficulty) (MAX(?difficulty) as ?maxDifficulty)
+WHERE {
+  ai:ml_engineer ai:needKnowldgeOf ?subfield .
+  ?subfield ai:hasPrerequisite ?prerequisite .
+  OPTIONAL { ?subfield ai:usesTool ?tool }
+  OPTIONAL { ?subfield ai:difficultyLevel ?difficulty }
+  FILTER (!BOUND(?tool) || BOUND(?tool))
+}
+GROUP BY ?subfield ?prerequisite
+ORDER BY DESC(?toolCount)
+
+---
+
+# ENHANCED Q2: Tool Requirements with Filtering and Union
+# Which Deep Learning Frameworks are open-source? 
+# Also include Vision Engineer skills with open-source constraint and aggregation
+SELECT ?framework ?openSource (COUNT(?skill) as ?skillCount)
+WHERE {
+  {
+    ?framework rdf:type ai:Deep_Learning_Framework ;
+               ai:isOpenSource ?openSource .
+    ai:vision_engineer ai:requiresSkill ?skill .
+    FILTER (?openSource = true)
+  }
+  UNION
+  {
+    ?framework rdf:type ai:Deep_Learning_Framework ;
+               ai:isOpenSource ?openSource .
+    FILTER (?openSource = false)
+  }
+  OPTIONAL { ai:vision_engineer ai:requiresSkill ?skill }
+}
+GROUP BY ?framework ?openSource
+ORDER BY DESC(?skillCount)
+
+---
+
+# ENHANCED Q3: Prerequisites Hierarchy with Optional and MINUS
+# What are all foundational subjects needed to understand Deep Learning?
+# Also exclude those that are prerequisites of other topics
+SELECT DISTINCT ?prerequisite (COUNT(?user) as ?usageCount)
+WHERE {
+  ai:deep_neural_networks ai:hasPrerequisite* ?prerequisite .
+  ?prerequisite rdf:type ai:Foundational_Subject .
+  OPTIONAL { ?topic ai:hasPrerequisite ?prerequisite . BIND(?topic as ?user) }
+}
+GROUP BY ?prerequisite
+ORDER BY DESC(?usageCount)
+
+---
+
+# [OK] ENHANCED Q4: Competency-Based Job Matching with Complex Filtering
+# Career roles suitable for intermediate-level learners with Neural Networks knowledge
+# Include optional salary info and calculate matching score
+SELECT ?role (COALESCE(?salary, 0) as ?avgSalary)
+WHERE {
+  ?role rdf:type ai:Career_Role ;
+        ai:needKnowldgeOf ai:neural_network_basics .
+  OPTIONAL { ?role ai:averageSalary ?salary . FILTER (?salary > 200000) }
+  ?subfield ai:usesTool ai:python ;
+            ai:suitableForLevel ai:intermediate ;
+            rdf:type ?knowledgeArea .
+}
+GROUP BY ?role ?salary
+HAVING (COUNT(?knowledgeArea) > 0)
+
+---
+
+# [BAD] ENHANCED Q5: Recommended Learning Path with Optional Properties
+# Learning resources for Computer Vision with difficulty levels and optional URLs
+SELECT ?resource ?level (COUNT(?relatedTopic) as ?relevanceScore)
+WHERE {
+  ai:image_classification rdf:type ai:Computer_Vision ;
+                          ai:recommendedResource ?resource ;
+                          ai:suitableForLevel ?level .
+  ?resource rdf:type ai:Learning_Resource .
+  OPTIONAL { ai:image_classification ai:relatedTo ?relatedTopic }
+  OPTIONAL { ?resource ai:resourceURL ?url . FILTER(BOUND(?url)) }
+}
+GROUP BY ?resource ?level
+ORDER BY DESC(?relevanceScore) ?level
+
+---
+
+# [OK] ENHANCED Q6: Salary and Compensation Analysis with Filtering and Optional
+# Career roles with salary analysis and optional specialization areas
+SELECT ?role ?salary (COUNT(DISTINCT ?knowledge) as ?specializationCount)
+       (SAMPLE(?knowledge) as ?example)
+WHERE {
+  ?role rdf:type ai:Career_Role ;
+        ai:averageSalary ?salary ;
+        ai:needKnowldgeOf ?knowledge .
+  FILTER (?salary > 300000)
+  OPTIONAL { ?knowledge rdf:type ai:AI_Subfield }
+}
+GROUP BY ?role ?salary
+HAVING (COUNT(DISTINCT ?knowledge) >= 1)
+ORDER BY DESC(?salary) DESC(?specializationCount)
+
+---
+
+# ENHANCED Q7: Tool Adoption with Union and Aggregations
+# AI subfields using PyTorch OR TensorFlow with prerequisite chains
+SELECT ?subfield ?tool (COUNT(?prerequisites) as ?prerequisiteChainLength)
+WHERE {
+  ?subfield rdf:type ai:AI_Subfield ;
+            ai:usesTool ?tool ;
+            ai:hasPrerequisite* ?prerequisites .
+  {
+    FILTER (?tool = ai:pytorch)
+  }
+  UNION
+  {
+    FILTER (?tool = ai:tensorflow)
+  }
+}
+GROUP BY ?subfield ?tool
+ORDER BY DESC(?prerequisiteChainLength)
+
+---
+
+# ENHANCED Q8: Similarity and Related Concepts with Minus and Optional
+# Topics related to Fuzzy Logic with difficulty levels, excluding those already advanced
+SELECT ?topic ?level (COUNT(?tool) as ?toolCount)
+WHERE {
+  ai:fuzzy_logic_1 ai:relatedTo ?topic .
+  OPTIONAL { ?topic ai:difficultyLevel ?level }
+  OPTIONAL { ?topic ai:usesTool ?tool }
+  MINUS { ?topic ai:suitableForLevel ai:advanced }
+}
+GROUP BY ?topic ?level
+ORDER BY ?level DESC(?toolCount)
+
+---
+
+# ENHANCED Q9: Type Hierarchy with Optional Metadata
+# Learning Resource types and instances with optional difficulty and availability
+SELECT ?resourceType ?instance (COUNT(?attribute) as ?attributeCount)
+WHERE {
+  ?resourceType rdfs:subClassOf ai:Learning_Resource .
+  ?instance rdf:type ?resourceType .
+  OPTIONAL { 
+    { ?instance ai:difficultyLevel ?attribute }
+    UNION
+    { ?instance ai:resourceURL ?attribute }
+    UNION
+    { ?instance ai:suitableForLevel ?attribute }
+  }
+}
+GROUP BY ?resourceType ?instance
+ORDER BY DESC(?attributeCount)
+
+---
+
+# ENHANCED Q10: Disjoint Class Verification with Aggregations
+# List AI Subfields and Career Roles to verify disjointness
+# Count connections for each entity
+SELECT ?subfield (COUNT(?subfield_uses) as ?subfield_tools) 
+       ?role (COUNT(?role_needs) as ?role_requirements)
+WHERE {
+  ?subfield rdf:type ai:AI_Subfield .
+  OPTIONAL { ?subfield ai:usesTool ?subfield_uses }
+  ?role rdf:type ai:Career_Role .
+  OPTIONAL { ?role ai:needKnowldgeOf ?role_needs }
+}
+GROUP BY ?subfield ?role
+ORDER BY DESC(?subfield_tools) DESC(?role_requirements)
+LIMIT 20
+
+---
+
+# ENHANCED Q11: Multi-Criteria Optimization with Complex Filtering
+# Career roles: Computer Vision knowledge, high salary, open-source tools preferred
+SELECT ?role ?salary (COUNT(DISTINCT ?tool) as ?toolCount) 
+       (SUM(IF(?isOpen=true, 1, 0)) as ?openSourceCount)
+WHERE {
+  ?role rdf:type ai:Career_Role ;
+        ai:needKnowldgeOf ?subfield ;
+        ai:averageSalary ?salary ;
+        ai:requiresSkill ?tool .
+  ?subfield rdf:type ai:Computer_Vision .
+  OPTIONAL { ?tool ai:isOpenSource ?isOpen }
+  FILTER (?salary > 350000)
+}
+GROUP BY ?role ?salary
+HAVING (COUNT(DISTINCT ?tool) > 1)
+ORDER BY DESC(?salary) DESC(?openSourceCount)
+
+---
+
+# ENHANCED Q12: Skill Gap Analysis with Optional and Aggregations
+# Data Scientist role skills with open-source analysis and categorization
+SELECT ?skill (COALESCE(?openSource, false) as ?isOpenSource) ?skillType 
+       (COUNT(?skill) as ?frequency)
+WHERE {
+  ai:data_scientist ai:requiresSkill ?skill .
+  ?skill rdf:type ?skillType .
+  OPTIONAL { ?skill ai:isOpenSource ?openSource }
+}
+GROUP BY ?skill ?openSource ?skillType
+ORDER BY DESC(?frequency) ?openSource DESC(?skillType)
+
+---
+
+# ENHANCED Q13: Educational Pathway with Complex Prerequisites
+# Check if Linear Algebra + PyTorch prepares for Computer Vision
+# Include optional related resources and skill chains
+SELECT ?vision_resource (COUNT(?prerequisiteChain) as ?chainDepth)
+       (GROUP_CONCAT(?tool; separator=",") as ?requiredTools)
+WHERE {
+  ai:linear_algebra_1 rdf:type ai:Linear_Algebra .
+  ai:pytorch rdf:type ai:Deep_Learning_Framework .
+  ?vision rdf:type ai:Computer_Vision ;
+          ai:hasPrerequisite* ?prerequisiteChain ;
+          ai:usesTool ai:pytorch ;
+          ai:recommendedResource ?vision_resource .
+  OPTIONAL { ?vision ai:usesTool ?tool }
+}
+GROUP BY ?vision_resource
+ORDER BY DESC(?chainDepth)
+
+---
+
+# ENHANCED Q14: Class Instance Discovery with Aggregations
+# Generative_AI instances with metadata aggregation
+SELECT ?instance ?difficulty (COUNT(?resource) as ?resourceCount) 
+       (COUNT(?tool) as ?toolCount) (GROUP_CONCAT(?tool; separator=",") as ?toolList)
+WHERE {
+  ?instance rdf:type ai:Generative_AI .
+  OPTIONAL { ?instance ai:difficultyLevel ?difficulty }
+  OPTIONAL { ?instance ai:recommendedResource ?resource }
+  OPTIONAL { ?instance ai:usesTool ?tool }
+}
+GROUP BY ?instance ?difficulty
+ORDER BY ?difficulty DESC(?resourceCount)
+
+---
+
+# ENHANCED Q15: Cross-Domain Discovery with Union and Filtering
+# Learning resources for intermediate-level learners interested in Neural Networks AND/OR Fuzzy Logic
+SELECT ?resource (COUNT(?domain) as ?domainCoverage) 
+       (GROUP_CONCAT(?relatedDomain; separator=",") as ?relatedDomains)
+WHERE {
+  ?resource rdf:type ai:Learning_Resource ;
+            ai:suitableForLevel ai:intermediate .
+  {
+    ?neural rdf:type ai:Neural_Networks ;
+            ai:recommendedResource ?resource .
+    BIND("Neural_Networks" as ?domain)
+    OPTIONAL { ?neural ai:relatedTo ?relatedDomain }
+  }
+  UNION
+  {
+    ?fuzzy rdf:type ai:Fuzzy_Logic ;
+           ai:recommendedResource ?resource .
+    BIND("Fuzzy_Logic" as ?domain)
+    OPTIONAL { ?fuzzy ai:relatedTo ?relatedDomain }
+  }
+}
+GROUP BY ?resource
+ORDER BY DESC(?domainCoverage)
+
+---
+
+# ENHANCED Q16: Open-World Reasoning with OPTIONAL and GROUP BY
+# Career Roles and required AI Subfields with optional salary tiers
+SELECT ?role (GROUP_CONCAT(DISTINCT ?subfield; separator=", ") as ?subfields) 
+       (COALESCE(?salary, 0) as ?salaryTier) (COUNT(?subfield) as ?knowledgeAreaCount)
+WHERE {
+  ?role rdf:type ai:Career_Role .
+  OPTIONAL {
+    ?role ai:needKnowldgeOf ?subfield .
+    ?subfield rdf:type ai:AI_Subfield .
+  }
+  OPTIONAL { ?role ai:averageSalary ?salary }
+}
+GROUP BY ?role ?salary
+ORDER BY DESC(?knowledgeAreaCount) DESC(?salary)
+
+---
+
+# ENHANCED Q17: Competency Validation with HAVING and Aggregations  
+# Verify AI Subfields have at least 2 tools and prerequisites
+SELECT ?subfield (COUNT(DISTINCT ?tool) as ?toolCount) 
+       (COUNT(DISTINCT ?prerequisite) as ?prerequisiteCount)
+WHERE {
+  ?subfield rdf:type ai:AI_Subfield .
+  OPTIONAL { ?subfield ai:usesTool ?tool }
+  OPTIONAL { ?subfield ai:hasPrerequisite ?prerequisite }
+}
+GROUP BY ?subfield
+HAVING (COUNT(DISTINCT ?tool) >= 2 AND COUNT(DISTINCT ?prerequisite) >= 1)
+ORDER BY DESC(?toolCount) DESC(?prerequisiteCount)
