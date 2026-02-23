@@ -19,9 +19,9 @@ This folder contains the ontology, competency questions, SPARQL queries, and a S
 ## How to Run
 
 1. Install dependencies: `poetry install` in the project directory.
-2. Upload the `ai-ontology.rdf` file to a SPARQL endpoint (e.g., GraphDB). Ensure the endpoint matches the URL `http://localhost:7200/repositories/ai-ontology`.
+2. Upload the `ai-ontology.rdf` file to a SPARQL endpoint (e.g., using GraphDB). Ensure the endpoint matches the URL `http://localhost:7200/repositories/ai-ontology`.
 3. Ensure you have ollama installed and running with `llama3.2:1B` available.
-4. Run the Streamlit app: `streamlit run app/app.py`.
+4. Run the Streamlit app: `poetry run streamlit run app.py` from project root.
 5. Use the app to select and run competency questions, view results, and explore the ontology.
 
 ## Links
