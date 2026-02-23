@@ -1,0 +1,7 @@
+﻿,resourceType,resourceCount,coveredSubfields
+0,Online_Course,6,"matrix_factorization, ranking_models, neural_networks_int, fuzzy_logic_int"
+1,Book,6,"agentic_ai, feedforward_networks, rule_based_reasoning, fuzzy_sets_basics, mobile_robots, image_classification, knowledge_base_design, expert_system_shells, neural_networks_int, fuzzy_logic_int"
+2,Documentation,5,"fuzzy_control, autonomous_navigation, fuzzy_inference, robotic_manipulation"
+3,Research_Paper,5,"small_language_models, image_classification, actor_critic, q_learning, policy_gradients"
+4,Video_Tutorial,5,"image_classification, object_detection, inference_engines, advanced_computer_vision, image_classification_enhanced, computer_vision_advanced, text_generation, cooperative_agents, competitive_agents"
+5,University_Degree,5,"distributed_planning, object_detection, value_iteration, semantic_segmentation"

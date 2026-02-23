@@ -1,0 +1,137 @@
+PREFIX ai: <http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+
+################################################################################
+# AI ONTOLOGY - PRACTICAL COMPETENCY QUESTIONS
+################################################################################
+
+# CQ1
+# 1. What knowledge does a data scientist require?
+SELECT ?subfield ?difficulty
+WHERE {
+  ai:data_scientist ai:needKnowldgeOf ?subfield .
+  OPTIONAL { ?subfield ai:difficultyLevel ?difficulty }
+}
+ORDER BY ?difficulty
+
+# CQ2
+# 2. What intermediate-level resources are recommended for Image Classification?
+SELECT ?resource ?specificType ?difficulty
+WHERE {
+  ai:image_classification ai:recommendedResource ?resource .
+  ?resource rdf:type ?specificType .
+  FILTER (?specificType != owl:NamedIndividual && ?specificType != ai:Learning_Resource)
+  OPTIONAL { ?resource ai:difficultyLevel ?difficulty }
+}
+ORDER BY ?specificType ?difficulty
+
+# CQ3
+# 3. What foundational math subjects are needed for Deep Neural Networks?
+SELECT DISTINCT ?prerequisite ?type
+WHERE {
+  ai:deep_neural_networks ai:hasPrerequisite* ?prerequisite .
+  ?prerequisite rdf:type ?type .
+  FILTER (?type IN (ai:Linear_Algebra, ai:Calculus, ai:Proability_And_Statistics))
+}
+ORDER BY ?type ?prerequisite
+
+# CQ4
+# 4. Which open-source Deep Learning frameworks are used across various AI topics?
+SELECT ?framework (GROUP_CONCAT(DISTINCT REPLACE(STR(?subfield), "^.*#", ""); separator=", ") as ?usedInSubfields)
+WHERE {
+  ?framework rdf:type ai:Deep_Learning_Framework ;
+             ai:isOpenSource true .
+             
+  ?subfield ai:usesTool ?framework .
+  
+  # Filter out the generic NamedIndividual class. To clean up the results
+  ?subfield rdf:type ?subfieldType .
+  FILTER (?subfieldType != owl:NamedIndividual)
+}
+GROUP BY ?framework
+ORDER BY ?framework
+
+# CQ5
+# 5. What are high-paying roles and their skills?
+SELECT ?role ?salary (GROUP_CONCAT(DISTINCT REPLACE(STR(?skill), "^.*#", ""); separator=", ") as ?skills)
+WHERE {
+  ?role rdf:type ai:Career_Role ;
+        ai:averageSalary ?salary ;
+        ai:requiresSkill ?skill .
+  FILTER (?salary > 350000)
+}
+GROUP BY ?role ?salary
+ORDER BY DESC(?salary) ?role
+
+# CQ6
+# 6. Skill Gap: What skills does a Data Scientist require that a Vision Engineer does not?
+SELECT DISTINCT (REPLACE(STR(?skill), "^.*#", "") as ?exclusiveSkill)
+WHERE {
+  ai:data_scientist ai:requiresSkill ?skill .
+  
+  # Filter out any skills that the Vision Engineer also requires
+  FILTER NOT EXISTS { 
+      ai:vision_engineer ai:requiresSkill ?skill 
+  }
+}
+ORDER BY ?exclusiveSkill
+
+# CQ7
+# 7. How many subfields per knowledge level?
+SELECT ?level (COUNT(DISTINCT ?subfield) as ?subfieldCount)
+WHERE {
+  ?subfield rdf:type ai:AI_Subfield ;
+            ai:suitableForLevel ?level .
+  ?level rdf:type ai:Knowledge_Level .
+}
+GROUP BY ?level
+ORDER BY ?level
+
+# CQ8
+# 8. What topics relate to Fuzzy Logic systems, and what tools do they use?
+SELECT (REPLACE(STR(?topic), "^.*#", "") as ?relatedTopic) 
+       (GROUP_CONCAT(DISTINCT REPLACE(STR(?tool), "^.*#", ""); separator=", ") as ?toolsUsed)
+WHERE {
+  ai:fuzzy_logic_1 ai:relatedTo ?topic .
+  OPTIONAL { ?topic ai:usesTool ?tool }
+  
+  # Filter out self-referencing to keep the list purely about external topics
+  FILTER (?topic != ai:fuzzy_logic_1)
+}
+GROUP BY ?topic
+ORDER BY ?topic
+
+# CQ9
+# 9. What learning materials exist for what topics?
+SELECT ?resourceType (COUNT(DISTINCT ?resource) as ?resourceCount) 
+       (GROUP_CONCAT(DISTINCT REPLACE(STR(?subfield), "^.*#", ""); separator=", ") as ?coveredSubfields)
+WHERE {
+  ?resourceType rdfs:subClassOf ai:Learning_Resource .
+  ?resource rdf:type ?resourceType .
+  OPTIONAL {
+    ?subfield rdf:type ai:AI_Subfield ;
+              ai:recommendedResource ?resource .
+  }
+}
+GROUP BY ?resourceType
+ORDER BY DESC(?resourceCount)
+
+# CQ10
+# 10. Complete 360-degree career overview for an ML Engineer
+SELECT (REPLACE(STR(?role), "^.*#", "") as ?career)
+       ?salary
+       (GROUP_CONCAT(DISTINCT REPLACE(STR(?knowledge), "^.*#", ""); separator=", ") as ?knowledgeAreas)
+       (GROUP_CONCAT(DISTINCT REPLACE(STR(?skill), "^.*#", ""); separator=", ") as ?skills)
+       (COUNT(DISTINCT ?resource) as ?totalLearningResources)
+WHERE {
+  # Bind the specific role we want to analyze
+  BIND(ai:ml_engineer AS ?role)
+  
+  ?role ai:averageSalary ?salary ;
+        ai:needKnowldgeOf ?knowledge ;
+        ai:requiresSkill ?skill .
+        
+  OPTIONAL { ?knowledge ai:recommendedResource ?resource }
+}
+GROUP BY ?role ?salary

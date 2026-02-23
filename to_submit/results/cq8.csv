@@ -1,0 +1,6 @@
+﻿,relatedTopic,toolsUsed
+0,agentic_ai,"pytorch, langchain, scipy"
+1,fuzzy_logic_base,
+2,mamdani_systems,"langchain, pinecone"
+3,modern_mas,"aws_sagemaker, faiss"
+4,sugeno_systems,"pytorch, numpy, scipy"
