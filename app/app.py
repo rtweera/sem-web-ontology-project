@@ -91,8 +91,8 @@ def generate_natural_response(user_prompt, raw_data):
     )
 
 # --- 3. UI Layout ---
-st.set_page_config(page_title="AICCO Ontology", layout="wide")
-st.title("🧠 The Artificial Intelligence Ontology (AICCO)")
+st.set_page_config(page_title="AIO Ontology", layout="wide")
+st.title("🧠 The Artificial Intelligence Ontology")
 
 tab1, tab2, tab3, tab4 = st.tabs([
     "🎯 Competency Questions", 
@@ -217,17 +217,24 @@ WHERE {
 GROUP BY ?resourceType
 ORDER BY DESC(?resourceCount)
 """,
-        "10. Complete 360-degree career overview": PREFIXES + """
-SELECT ?knowledge ?skill (COUNT(?resource) as ?resourceCount) ?salary
+        "10. Complete 360-degree career overview for an ML Engineer": PREFIXES + """
+SELECT (REPLACE(STR(?role), "^.*#", "") as ?career)
+       ?salary
+       (GROUP_CONCAT(DISTINCT REPLACE(STR(?knowledge), "^.*#", ""); separator=", ") as ?knowledgeAreas)
+       (GROUP_CONCAT(DISTINCT REPLACE(STR(?skill), "^.*#", ""); separator=", ") as ?skills)
+       (COUNT(DISTINCT ?resource) as ?totalLearningResources)
 WHERE {
-  ai:ml_engineer ai:needKnowldgeOf ?knowledge ;
-                 ai:requiresSkill ?skill ;
-                 ai:averageSalary ?salary .
+  # Bind the specific role we want to analyze
+  BIND(ai:ml_engineer AS ?role)
+  
+  ?role ai:averageSalary ?salary ;
+        ai:needKnowldgeOf ?knowledge ;
+        ai:requiresSkill ?skill .
+        
   OPTIONAL { ?knowledge ai:recommendedResource ?resource }
 }
-GROUP BY ?knowledge ?skill ?salary
-ORDER BY ?knowledge ?skill
-"""
+GROUP BY ?role ?salary
+""",
     }
     
     selected_cq = st.selectbox("Select a question to query the Knowledge Graph:", list(questions.keys()))
