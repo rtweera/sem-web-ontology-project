@@ -4,8 +4,6 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 ################################################################################
 # AI ONTOLOGY - PRACTICAL COMPETENCY QUESTIONS
-# These 10 questions mirror the simplicity and depth of library ontology queries
-# while exploring real AI domain scenarios
 ################################################################################
 
 # CQ1: Career Path Analysis
@@ -108,8 +106,8 @@ ORDER BY ?topic ?tool
 
 # CQ9: Resource Type Distribution
 # What types of learning resources exist, and which AI subfields do they cover?
-SELECT ?resourceType (COUNT(?resource) as ?resourceCount) 
-       (GROUP_CONCAT(DISTINCT ?subfield; separator=", ") as ?coveredSubfields)
+SELECT ?resourceType (COUNT(DISTINCT ?resource) as ?resourceCount) 
+       (GROUP_CONCAT(DISTINCT REPLACE(STR(?subfield), "^.*#", ""); separator=", ") as ?coveredSubfields)
 WHERE {
   ?resourceType rdfs:subClassOf ai:Learning_Resource .
   ?resource rdf:type ?resourceType .
@@ -120,7 +118,6 @@ WHERE {
 }
 GROUP BY ?resourceType
 ORDER BY DESC(?resourceCount)
-
 ---
 
 # CQ10: Comprehensive Career Profile

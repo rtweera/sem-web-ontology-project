@@ -9,8 +9,9 @@ sparql = SPARQLWrapper(SPARQL_ENDPOINT)
 
 PREFIXES = """
 PREFIX ai: <http://www.semanticweb.org/ravindu/ontologies/2026/1/ai-ontology#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 """
-
 @st.cache_data(show_spinner=False)
 def run_query(query_string):
     """Executes a SPARQL query against GraphDB and returns a DataFrame and raw JSON."""
@@ -99,28 +100,150 @@ tab1, tab2, tab3, tab4 = st.tabs([
     "🤖 Transparent AI Agent", 
     "💻 SPARQL Playarea"
 ])
-
+    
 # --- TAB 1: Competency Questions ---
 with tab1:
     st.header("Mandatory Competency Questions")
+    st.write("Select a predefined question from the assignment to instantly view the inferred knowledge.")
     
     questions = {
-        "1. Complete prerequisite learning path for Small Language Models?": AGENT_QUERIES["PREREQUISITES"]["sparql"],
-        "2. Career roles requiring PyTorch and their average salary?": AGENT_QUERIES["ROLES"]["sparql"],
-        "3. Tools used for RAG and their open-source status?": AGENT_QUERIES["RAG_TOOLS"]["sparql"],
-        "4. Which GenAI concepts have a difficulty level > 7?": PREFIXES + "SELECT ?concept ?diff WHERE { ?concept a ai:Generative_AI ; ai:difficultyLevel ?diff . FILTER (?diff > 7) }"
+        "1. What knowledge does a data scientist require?": PREFIXES + """
+SELECT ?subfield ?difficulty
+WHERE {
+  ai:data_scientist ai:needKnowldgeOf ?subfield .
+  OPTIONAL { ?subfield ai:difficultyLevel ?difficulty }
+}
+ORDER BY ?difficulty
+""",
+        "2. What intermediate-level resources are recommended for Image Classification?": PREFIXES + """
+SELECT ?resource ?specificType ?difficulty
+WHERE {
+  # 1. Get resources recommended for the specific topic
+  ai:image_classification ai:recommendedResource ?resource .
+  
+  # 2. Get the type of the resource
+  ?resource rdf:type ?specificType .
+  
+  # 3. Filter out the generic parent classes to stop duplicate rows
+  FILTER (?specificType != owl:NamedIndividual && ?specificType != ai:Learning_Resource)
+  
+  # 4. (Optional) Check difficulty level if it exists
+  OPTIONAL { ?resource ai:difficultyLevel ?difficulty }
+}
+ORDER BY ?specificType ?difficulty
+""",
+        "3. What foundational math subjects are needed for Deep Neural Networks?": PREFIXES + """
+SELECT DISTINCT ?prerequisite ?type
+WHERE {
+  ai:deep_neural_networks ai:hasPrerequisite* ?prerequisite .
+  ?prerequisite rdf:type ?type .
+  FILTER (?type IN (ai:Linear_Algebra, ai:Calculus, ai:Proability_And_Statistics))
+}
+ORDER BY ?type ?prerequisite
+""",
+        "4. Which open-source Deep Learning frameworks are used across various AI topics?": PREFIXES + """
+SELECT ?framework (GROUP_CONCAT(DISTINCT REPLACE(STR(?subfield), "^.*#", ""); separator=", ") as ?usedInSubfields)
+WHERE {
+  # Find open-source
+  ?framework rdf:type ai:Deep_Learning_Framework ;
+             ai:isOpenSource true .
+             
+  ?subfield ai:usesTool ?framework .
+  
+  # Filter out the generic NamedIndividual class. To clean up the results
+  ?subfield rdf:type ?subfieldType .
+  FILTER (?subfieldType != owl:NamedIndividual)
+}
+GROUP BY ?framework
+ORDER BY ?framework
+""",
+        "5. What are high-paying roles and their skills?": PREFIXES + """
+SELECT ?role ?salary (GROUP_CONCAT(DISTINCT REPLACE(STR(?skill), "^.*#", ""); separator=", ") as ?skills)
+WHERE {
+  ?role rdf:type ai:Career_Role ;
+        ai:averageSalary ?salary ;
+        ai:requiresSkill ?skill .
+  FILTER (?salary > 350000)
+}
+GROUP BY ?role ?salary
+ORDER BY DESC(?salary) ?role
+""",
+        "6. Skill Gap: What skills does a Data Scientist require that a Vision Engineer does not?": PREFIXES + """
+SELECT DISTINCT (REPLACE(STR(?skill), "^.*#", "") as ?exclusiveSkill)
+WHERE {
+  ai:data_scientist ai:requiresSkill ?skill .
+  
+  # Filter out any skills that the Vision Engineer also requires
+  FILTER NOT EXISTS { 
+      ai:vision_engineer ai:requiresSkill ?skill 
+  }
+}
+ORDER BY ?exclusiveSkill
+""",
+        "7. How many subfields per knowledge level?": PREFIXES + """
+SELECT ?level (COUNT(DISTINCT ?subfield) as ?subfieldCount)
+WHERE {
+  ?subfield rdf:type ai:AI_Subfield ;
+            ai:suitableForLevel ?level .
+  ?level rdf:type ai:Knowledge_Level .
+}
+GROUP BY ?level
+ORDER BY ?level
+""",
+        "8. What topics relate to Fuzzy Logic systems, and what tools do they use?": PREFIXES + """
+SELECT (REPLACE(STR(?topic), "^.*#", "") as ?relatedTopic) 
+       (GROUP_CONCAT(DISTINCT REPLACE(STR(?tool), "^.*#", ""); separator=", ") as ?toolsUsed)
+WHERE {
+  ai:fuzzy_logic_1 ai:relatedTo ?topic .
+  OPTIONAL { ?topic ai:usesTool ?tool }
+  
+  # Filter out self-referencing to keep the list purely about external topics
+  FILTER (?topic != ai:fuzzy_logic_1)
+}
+GROUP BY ?topic
+ORDER BY ?topic
+""",
+        "9. What learning materials exist for what topics?": PREFIXES + """
+SELECT ?resourceType (COUNT(DISTINCT ?resource) as ?resourceCount) 
+       (GROUP_CONCAT(DISTINCT REPLACE(STR(?subfield), "^.*#", ""); separator=", ") as ?coveredSubfields)
+WHERE {
+  ?resourceType rdfs:subClassOf ai:Learning_Resource .
+  ?resource rdf:type ?resourceType .
+  OPTIONAL {
+    ?subfield rdf:type ai:AI_Subfield ;
+              ai:recommendedResource ?resource .
+  }
+}
+GROUP BY ?resourceType
+ORDER BY DESC(?resourceCount)
+""",
+        "10. Complete 360-degree career overview": PREFIXES + """
+SELECT ?knowledge ?skill (COUNT(?resource) as ?resourceCount) ?salary
+WHERE {
+  ai:ml_engineer ai:needKnowldgeOf ?knowledge ;
+                 ai:requiresSkill ?skill ;
+                 ai:averageSalary ?salary .
+  OPTIONAL { ?knowledge ai:recommendedResource ?resource }
+}
+GROUP BY ?knowledge ?skill ?salary
+ORDER BY ?knowledge ?skill
+"""
     }
     
     selected_cq = st.selectbox("Select a question to query the Knowledge Graph:", list(questions.keys()))
     
     if st.button("Execute Competency Query", type="primary"):
-        df_cq, _ = run_query(questions[selected_cq])
-        if not df_cq.empty:
-            st.dataframe(df_cq, use_container_width=True)
-        else:
-            st.info("No results found in the current ontology state.")
-        with st.expander("🛠️ View SPARQL Code"):
-            st.code(questions[selected_cq], language="sparql")
+        with st.spinner("Querying GraphDB..."):
+            df_cq, _ = run_query(questions[selected_cq])
+            if not df_cq.empty:
+                st.dataframe(df_cq, use_container_width=True)
+            else:
+                st.info("No results found in the current ontology state. Ensure your instances (e.g., ai:image_classification, ai:ml_engineer) exactly match these queries.")
+            
+            with st.expander("🛠️ View SPARQL Code"):
+                st.code(questions[selected_cq], language="sparql")
+
+
 
 # --- TAB 2: Curriculum Explorer (Expanded) ---
 with tab2:
